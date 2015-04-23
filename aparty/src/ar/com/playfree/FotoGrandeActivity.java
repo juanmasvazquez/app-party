@@ -26,18 +26,6 @@ public class FotoGrandeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
-		// Intent i = getIntent();
-		// int position = i.getIntExtra("position", -1);
-		// ImageAdapter_ adapter = new ImageAdapter_(this);
-		// ImageView originalImage =
-		// (ImageView)findViewById(R.id.originalImage);
-		// // originalImage.setImageResource(adapter.getThumbId(position));
-		// if (position != -1){
-		// Picasso.with(FotoGrandeActivity.this)
-		// .load(adapter.getThumbId(position))
-		// .centerCrop()
-		// .into(originalImage);
-		// }
 		ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
 		int position = getIntent().getIntExtra("position", -1);
@@ -80,25 +68,5 @@ public class FotoGrandeActivity extends Activity {
 			}
 		});
 
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-	
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 }
