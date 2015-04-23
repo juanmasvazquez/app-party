@@ -48,39 +48,20 @@ public class CameraActivity extends Activity {
 		File newdir = new File(dir);
 		newdir.mkdirs();
 
-		Button capture = (Button) findViewById(R.id.btnCapture);
-		capture.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
+		count++;
+		String file = dir + count + ".jpg";
+		newfile = new File(file);
+		try {
+			newfile.createNewFile();
+		} catch (IOException e) {
+		}
 
-				// here,counter will be incremented each time,and the picture
-				// taken by camera will be stored as 1.jpg,2.jpg and likewise.
-				count++;
-				String file = dir + count + ".jpg";
-				newfile = new File(file);
-				try {
-					newfile.createNewFile();
-				} catch (IOException e) {
-				}
+		Uri outputFileUri = Uri.fromFile(newfile);
 
-				Uri outputFileUri = Uri.fromFile(newfile);
+		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 
-				Intent cameraIntent = new Intent(
-						MediaStore.ACTION_IMAGE_CAPTURE);
-				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-
-				startActivityForResult(cameraIntent, TAKE_PHOTO_CODE);
-			}
-		});
-
-		Button verFotos = (Button) findViewById(R.id.btnVerFotos);
-		verFotos.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent verFotosIntent = new Intent(CameraActivity.this,
-						VerFotosActivity.class);
-				startActivity(verFotosIntent);
-
-			}
-		});
+		startActivityForResult(cameraIntent, TAKE_PHOTO_CODE);
 	}
 
 	@Override
@@ -89,8 +70,9 @@ public class CameraActivity extends Activity {
 
 		if (requestCode == TAKE_PHOTO_CODE && resultCode == RESULT_OK) {
 			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-			Bitmap bitmap = BitmapFactory.decodeFile(newfile.getAbsolutePath(),bmOptions);
-			bitmap = Bitmap.createScaledBitmap(bitmap,200,200,true);
+			Bitmap bitmap = BitmapFactory.decodeFile(newfile.getAbsolutePath(),
+					bmOptions);
+			bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
 			try {
 				sendPhoto(bitmap);
 			} catch (Exception e) {
@@ -104,7 +86,7 @@ public class CameraActivity extends Activity {
 		new UploadTask().execute(bitmap);
 	}
 
-private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
+	private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
 
 		protected Void doInBackground(Bitmap... bitmaps) {
 			if (bitmaps[0] == null)
@@ -119,7 +101,8 @@ private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
 				String address = info.getMacAddress();
 
 				HttpPost httppost = new HttpPost(
-						"http://172.16.19.52:8080/playfree/foto/adm.action?mac="+ address); // server
+						"http://172.16.19.52:8080/playfree/foto/adm.action?mac="
+								+ address); // server
 
 				InputStreamEntity reqEntity = new InputStreamEntity(
 						new FileInputStream(newfile), -1);
