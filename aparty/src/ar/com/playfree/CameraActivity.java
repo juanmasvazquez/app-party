@@ -32,6 +32,7 @@ public class CameraActivity extends Activity {
 	int TAKE_PHOTO_CODE = 0;
 	public static int count = 0;
 	private File newfile;
+	public static String address = "";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -70,14 +71,22 @@ public class CameraActivity extends Activity {
 				startActivityForResult(cameraIntent, TAKE_PHOTO_CODE);
 			}
 		});
+
+		Button verFotos = (Button) findViewById(R.id.btnVerFotos);
+		verFotos.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent verFotosIntent = new Intent(CameraActivity.this,
+						VerFotosActivity.class);
+				startActivity(verFotosIntent);
+
+			}
+		});
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		
-		
 		if (requestCode == TAKE_PHOTO_CODE && resultCode == RESULT_OK) {
 			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 			Bitmap bitmap = BitmapFactory.decodeFile(newfile.getAbsolutePath(),bmOptions);
@@ -96,29 +105,29 @@ public class CameraActivity extends Activity {
 	}
 
 private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
-		
+
 		protected Void doInBackground(Bitmap... bitmaps) {
 			if (bitmaps[0] == null)
 				return null;
 			setProgress(0);
-			
+
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			try {
-				
+
 				WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 				WifiInfo info = manager.getConnectionInfo();
 				String address = info.getMacAddress();
 
 				HttpPost httppost = new HttpPost(
-						"http://172.16.19.52:8080/playfree/foto/adm.action?mac=" + address); // server
+						"http://172.16.19.52:8080/playfree/foto/adm.action?mac="+ address); // server
 
-				    InputStreamEntity reqEntity = new InputStreamEntity(
-				            new FileInputStream(newfile), -1);
-				    reqEntity.setContentType("binary/octet-stream");
-				    reqEntity.setChunked(true); // Send in multiple parts if needed
-				    httppost.setEntity(reqEntity);
-				    HttpResponse response = httpclient.execute(httppost);
-				
+				InputStreamEntity reqEntity = new InputStreamEntity(
+						new FileInputStream(newfile), -1);
+				reqEntity.setContentType("binary/octet-stream");
+				reqEntity.setChunked(true); // Send in multiple parts if needed
+				httppost.setEntity(reqEntity);
+				HttpResponse response = httpclient.execute(httppost);
+
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -131,100 +140,108 @@ private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
 
 			return null;
 		}
-		
+
 		@Override
 		protected void onProgressUpdate(Void... values) {
 			// TODO Auto-generated method stub
 			super.onProgressUpdate(values);
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-//			Toast.makeText(CameraActivity.this, R.string.uploaded, Toast.LENGTH_LONG).show();
+			// Toast.makeText(CameraActivity.this, R.string.uploaded,
+			// Toast.LENGTH_LONG).show();
 		}
 	}
 
+	private class UploadTask2 extends AsyncTask<Bitmap, Void, Void> {
 
-private class UploadTask2 extends AsyncTask<Bitmap, Void, Void> {
-	
-	protected Void doInBackground(Bitmap... bitmaps) {
-		if (bitmaps[0] == null)
-			return null;
-		setProgress(0);
-		
-		Bitmap bitmap = bitmaps[0];
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // convert Bitmap to ByteArrayOutputStream
-		InputStream in = new ByteArrayInputStream(stream.toByteArray()); // convert ByteArrayOutputStream to ByteArrayInputStream
+		protected Void doInBackground(Bitmap... bitmaps) {
+			if (bitmaps[0] == null)
+				return null;
+			setProgress(0);
 
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-		try {
-			
-			WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-			WifiInfo info = manager.getConnectionInfo();
-			String address = info.getMacAddress();
+			Bitmap bitmap = bitmaps[0];
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // convert
+																		// Bitmap
+																		// to
+																		// ByteArrayOutputStream
+			InputStream in = new ByteArrayInputStream(stream.toByteArray()); // convert
+																				// ByteArrayOutputStream
+																				// to
+																				// ByteArrayInputStream
 
-			HttpPost httppost = new HttpPost(
-					"http://192.168.1.144:8080/playfree/foto/adm.action?mac=" + address); // server
-			
-			MultipartEntity reqEntity = new MultipartEntity();
-			reqEntity.addPart("photo_playfree",
-					System.currentTimeMillis() + ".jpg", in);
-			httppost.setEntity(reqEntity);
-
-			HttpResponse response = null;
+			DefaultHttpClient httpclient = new DefaultHttpClient();
 			try {
-				response = httpclient.execute(httppost);
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
+
+				WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+				WifiInfo info = manager.getConnectionInfo();
+				address = info.getMacAddress();
+
+				HttpPost httppost = new HttpPost(
+						"http://192.168.1.144:8080/playfree/foto/adm.action?mac="
+								+ address); // server
+
+				MultipartEntity reqEntity = new MultipartEntity();
+				reqEntity.addPart("photo_playfree", System.currentTimeMillis()
+						+ ".jpg", in);
+				httppost.setEntity(reqEntity);
+
+				HttpResponse response = null;
+				try {
+					response = httpclient.execute(httppost);
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+				} finally {
+
+				}
 			} finally {
 
 			}
-		} finally {
 
-		}
-
-		if (in != null) {
-			try {
-				in.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		}
 
-		if (stream != null) {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+
+			return null;
 		}
 
-		return null;
+		@Override
+		protected void onProgressUpdate(Void... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			// Toast.makeText(CameraActivity.this, R.string.uploaded,
+			// Toast.LENGTH_LONG).show();
+		}
 	}
-	
-	@Override
-	protected void onProgressUpdate(Void... values) {
-		// TODO Auto-generated method stub
-		super.onProgressUpdate(values);
-	}
-	
-	@Override
-	protected void onPostExecute(Void result) {
-		// TODO Auto-generated method stub
-		super.onPostExecute(result);
-//		Toast.makeText(CameraActivity.this, R.string.uploaded, Toast.LENGTH_LONG).show();
-	}
-}
 
 }
