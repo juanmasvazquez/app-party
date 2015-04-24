@@ -77,7 +77,9 @@ public class MainActivity extends Activity {
 		Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvent);
 		btnUnirEvento.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// TODO:
+				Intent unirEventoIntent = new Intent(MainActivity.this,
+						UnirEventoActivity.class);
+				startActivity(unirEventoIntent);
 			}
 		});
 	}

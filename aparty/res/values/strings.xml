@@ -12,7 +12,8 @@
     <string name="likes">Likes:</string>
     <string name="tocaLaFoto">Toca la foto si te gusta!</string>
     <string name="subidaPor">Subida por:</string>
-    <string name="country_prompt">Filtrar por Categoria</string> 
+    <string name="country_prompt">Filtrar por Categoria</string>
+
     <string-array name="country_arrays">
         <item>Malaysia</item>
         <item>United States</item>
@@ -23,6 +24,10 @@
         <item>New Zealand</item>
         <item>India</item>
     </string-array>
-        <string name="categorias">Categorias:</string>
+
+    <string name="categorias">Categorias:</string>
+    <string name="title_activity_unir_evento">UnirEventoActivity</string>
+    <string name="dialog_unirse">Unirse</string>
+    <string name="dialog_cancelar">Cancelar</string>
 
 </resources>

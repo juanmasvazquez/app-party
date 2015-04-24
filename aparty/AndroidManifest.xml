@@ -27,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
             android:name=".VerFotosActivity"
             android:label="@string/title_activity_ver_fotos" >
@@ -35,10 +36,25 @@
             android:name=".FotoGrandeActivity"
             android:label="@string/title_activity_test" >
         </activity>
-         <activity
+        <activity
             android:name=".CameraActivity"
             android:label="Camera Cambiar" >
         </activity>
+        <activity
+            android:name=".UnirEventoActivity"
+            android:label="@string/title_activity_unir_evento" >
+        </activity>
+        
+        
+        
+        <activity android:name="jim.h.common.android.zxinglib.CaptureActivity"
+			android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:windowSoftInputMode="stateAlwaysHidden" />
+        
+        
+        
+        
     </application>
 
 </manifest>
