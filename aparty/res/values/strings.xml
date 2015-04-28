@@ -29,5 +29,8 @@
     <string name="title_activity_unir_evento">UnirEventoActivity</string>
     <string name="dialog_unirse">Unirse</string>
     <string name="dialog_cancelar">Cancelar</string>
+    <string name="button_capturar">Capturar</string>
+    <string name="button_unirse">Unirse al evento</string>
+    <string name="button_album">Ver album</string>
 
 </resources>
