@@ -13,6 +13,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -22,6 +23,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class MainActivity extends Activity {
 
@@ -30,11 +32,18 @@ public class MainActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
+		// Font path
+        String fontPath = "fonts/Roboto-Bold.ttf";
+        // Loading Font Face
+        Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
+ 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		// Boton Capturar Foto --------------------
 		Button btnCaptura = (Button) findViewById(R.id.btnCapture);
+		btnCaptura.setTypeface(tf);
 		btnCaptura.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				final String dir = Environment
@@ -65,6 +74,7 @@ public class MainActivity extends Activity {
 
 		// Boton Ver Album --------------------
 		Button btnVerAlbum = (Button) findViewById(R.id.btnVerAlbum);
+		btnVerAlbum.setTypeface(tf);
 		btnVerAlbum.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent verFotosIntent = new Intent(MainActivity.this,
@@ -74,7 +84,8 @@ public class MainActivity extends Activity {
 		});
 
 		// Boton unir Evento --------------------
-		Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvent);
+		Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
+		btnUnirEvento.setTypeface(tf);
 		btnUnirEvento.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent unirEventoIntent = new Intent(MainActivity.this,
