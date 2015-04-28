@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#95a5a6"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btnCapture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Camera" />
 
-    <Button
-        android:id="@+id/btnVerAlbum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ver Album" />
-    
-     <Button
-        android:id="@+id/btnUnirEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Join" />
+        <Button
+            android:id="@+id/btnUnirEvento"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_calendar"
+            android:text="@string/button_unirse"
+            android:textColor="@android:color/white" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnVerAlbum"
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnUnirEvento"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_album"
+            android:text="@string/button_album"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnCapture"
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnUnirEvento"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_camera"
+            android:text="@string/button_capturar"
+            android:textColor="@android:color/white" />
+       
+
+
+</RelativeLayout>
