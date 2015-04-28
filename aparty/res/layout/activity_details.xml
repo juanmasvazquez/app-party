@@ -9,39 +9,38 @@
     <!-- android:layout_width="match_parent" -->
     <!-- android:layout_height="match_parent" -->
     <!-- android:contentDescription="@string/contentDescription" /> -->
+    
 
-    <ImageView
+
+    <ar.com.playfree.TouchImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="30dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:src="@drawable/facebooklike2" />
+
+    <!-- <TextView -->
+    <!-- android:id="@+id/tocaLaFoto" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_alignParentTop="true" -->
+    <!-- android:layout_centerHorizontal="true" -->
+    <!-- android:text="@string/tocaLaFoto" -->
+    <!-- android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 
     <TextView
         android:id="@+id/cantLikes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="28dp"
         android:layout_toRightOf="@+id/imageView1"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/tocaLaFoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/tocaLaFoto"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/subidaPor"
@@ -52,18 +51,19 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/cantLikes"
+        android:layout_above="@+id/imageView1"
         android:layout_alignParentRight="true"
-        android:text="@string/subidaPor"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="@string/subidaPor" />
 
     <Button
         android:id="@+id/botonlike"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/meGusta" />
 
 </RelativeLayout>
