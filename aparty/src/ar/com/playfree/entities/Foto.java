@@ -1,7 +1,9 @@
 package ar.com.playfree.entities;
 
-public class Foto {
+import java.io.Serializable;
 
+public class Foto implements Serializable{
+ 
 	private Long id;
 	private Long idCategoria;
 	private String mac;

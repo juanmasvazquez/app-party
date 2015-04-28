@@ -1,19 +1,15 @@
 package ar.com.playfree;
 
-import com.squareup.picasso.Picasso;
-
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+import ar.com.playfree.entities.Foto;
+
+import com.squareup.picasso.Picasso;
 
 
 public class FotoGrandeActivity extends Activity {
@@ -26,16 +22,17 @@ public class FotoGrandeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
-		ImageView imageView = (ImageView) findViewById(R.id.imageView);
-
+	//	ImageView imageView = (ImageView) findViewById(R.id.imageView);
+		TouchImageView imageView = (TouchImageView) findViewById(R.id.imageView);
+		
 		int position = getIntent().getIntExtra("position", -1);
-		final FotoEntity foto = (FotoEntity) getIntent().getSerializableExtra("foto");
+		final Foto foto = (Foto) getIntent().getSerializableExtra("foto");
 		if (position != -1) {
 			Picasso.with(FotoGrandeActivity.this)
-					.load(foto.getURL())
+					.load(foto.getUrl())
 					.placeholder(R.raw.place_holder)
 					.resize(800, 800)
-					.centerCrop()
+					.centerInside()
 					.error(R.raw.big_problem)
 					.into(imageView);
 		} else {
@@ -50,20 +47,25 @@ public class FotoGrandeActivity extends Activity {
 		cantLikes.setText(String.valueOf(foto.getCantLikes()));
 		
 		TextView subidaPor = (TextView)findViewById(R.id.subidaPor);		
-		subidaPor.setText(foto.getSubidaPor());
+		subidaPor.setText(foto.getUsuario());
 
 		botonLike = (Button) findViewById(R.id.botonlike);
 		botonLike.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {				
-				if (!foto.isMeGusta()){
-					msg = "No te gusta esta foto!";
+				if (foto.isLike()){
+					botonLike.setText("Ya no me gusta");
+					foto.setLike(false);
+				} else {
+					botonLike.setText("Me gusta");
+					foto.setLike(true);
 				}
-				Toast.makeText(FotoGrandeActivity.this, msg,
-						Toast.LENGTH_SHORT).show();
-				Intent verFotosIntent = new Intent(FotoGrandeActivity.this,
-						VerFotosActivity.class);
-				startActivity(verFotosIntent);
+
+//				Toast.makeText(FotoGrandeActivity.this, msg,
+//						Toast.LENGTH_SHORT).show();
+//				Intent verFotosIntent = new Intent(FotoGrandeActivity.this,
+//						VerFotosActivity.class);
+//				startActivity(verFotosIntent);
 
 			}
 		});
