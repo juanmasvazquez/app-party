@@ -6,7 +6,7 @@
     <string name="title_activity_ver_fotos">Ver Album</string>
     <string name="title_activity_details">Details</string>
     <string name="imageDesc">Tamaño Original</string>
-    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_test">Foto</string>
     <string name="hello_world">Hello world!</string>
     <string name="contentDescription">descripcion</string>
     <string name="likes">Likes:</string>

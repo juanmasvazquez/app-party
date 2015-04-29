@@ -2,14 +2,17 @@ package ar.com.playfree;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import ar.com.playfree.entities.Foto;
+
 import com.squareup.picasso.Picasso;
 
 
@@ -25,6 +28,7 @@ public class FotoGrandeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 	//	ImageView imageView = (ImageView) findViewById(R.id.imageView);
+		getActionBar().setDisplayShowHomeEnabled(true);
 		 getActionBar().setHomeButtonEnabled(true);
 		 getActionBar().setDisplayHomeAsUpEnabled(true); 
 		TouchImageView imageView = (TouchImageView) findViewById(R.id.imageView);
@@ -81,5 +85,22 @@ public class FotoGrandeActivity extends Activity {
 			}
 		});
 
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+	    case android.R.id.home:
+	      startActivityAfterCleanup(VerFotosActivity.class);
+	      return true;
+		}
+	  return (super.onOptionsItemSelected(menuItem));
+	}
+
+	private void startActivityAfterCleanup(Class<?> cls) {
+	//	if (projectsDao != null) projectsDao.close();
+	  Intent intent = new Intent(getApplicationContext(), cls);
+	  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	  startActivity(intent);
 	}
 }

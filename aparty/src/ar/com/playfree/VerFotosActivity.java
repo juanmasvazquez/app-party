@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,31 +21,37 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
+import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Foto;
 import ar.com.playfree.services.DataServicesDummy;
 import com.squareup.picasso.Picasso;
-
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class VerFotosActivity extends Activity {
 
 	static List<Foto> fotos = new ArrayList<Foto>();
-	JSONObject fotosJson = null;
 	Spinner categorias = null;
-	private Button botonMeGusta = null;
+	DataServicesDummy dummy = new DataServicesDummy();
 
-
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_ver_fotos);
-		 getActionBar().setHomeButtonEnabled(true);
-		 getActionBar().setDisplayHomeAsUpEnabled(true); 
+		getActionBar().setDisplayShowHomeEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra("album");
 
 		try {
-			fotos = cargarFotos(this);
+			if (null == album) {
+				fotos = cargarFotos(this);
+			} else {
+				fotos = album;
+			}
 			cargarCategorias();
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -67,22 +74,19 @@ public class VerFotosActivity extends Activity {
 
 	private void cargarCategorias() {
 		categorias = (Spinner) findViewById(R.id.categorias);
-		List<String> list = new ArrayList<String>();
-		list.add("Android");
-		list.add("Java");
-		list.add("Spinner Data");
-		list.add("Spinner Adapter");
-		list.add("Spinner Example");
-
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, list);
-
-		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		categorias.setAdapter(dataAdapter);
-
+		List<Categoria> list = dummy.getCategorias(null);
+		SpinAdapter adapter;
+		// for (Categoria categoria : list){
+		// lista.add(categoria.getNombre());
+		// }
+		// ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_spinner_item, lista);
+		// dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		// categorias.setAdapter(dataAdapter);
+		// addListenerOnSpinnerItemSelection();
+		adapter = new SpinAdapter(VerFotosActivity.this, android.R.layout.simple_spinner_item, list);
+		categorias.setAdapter(adapter); 
 		addListenerOnSpinnerItemSelection();
-
 	}
 
 	public void addListenerOnSpinnerItemSelection() {
@@ -92,31 +96,9 @@ public class VerFotosActivity extends Activity {
 
 	private List<Foto> cargarFotos(Context context) throws JSONException {
 
-		DataServicesDummy dummy = new DataServicesDummy();
 		return dummy.getFotos(null);
 	}
 
-	// @Override
-	// public boolean onCreateOptionsMenu(Menu menu) {
-	// // Inflate the menu; this adds items to the action bar if it is
-	// present.
-	// getMenuInflater().inflate(R.menu.ver_fotos, menu);
-	// return true;
-	// }
-	//
-	// @Override
-	// public boolean onOptionsItemSelected(MenuItem item) {
-	// // Handle action bar item clicks here. The action bar will
-	// // automatically handle clicks on the Home/Up button, so long
-	// // as you specify a parent activity in AndroidManifest.xml.
-	// int id = item.getItemId();
-	// if (id == R.id.action_settings) {
-	// return true;
-	// }
-	// return super.onOptionsItemSelected(item);
-	// }
-
-	// our custom adapter
 	private class ImageAdapter extends BaseAdapter {
 		private Context mContext;
 
@@ -141,34 +123,63 @@ public class VerFotosActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// ImageView imageView;
-			ImageView imageView;
-			// check to see if we have a view
-			if (convertView == null) {
-				// no view - so create a new one
+			
+			ImageView imageView;			
+			if (convertView == null) {				
 				imageView = new ImageView(mContext);
-			} else {
-				// use the recycled view object
+			} else {				
 				imageView = (ImageView) convertView;
 			}
-
+			
 			Picasso picasso = Picasso.with(mContext);
-
 			Foto foto = (Foto) fotos.get(position);
-			picasso.load(foto.getUrl())
-					.placeholder(R.raw.place_holder)
-					.error(R.raw.big_problem)
-					.resize(150, 150)
-					.centerCrop()
+			picasso.load(foto.getUrl()).placeholder(R.raw.place_holder)
+					.error(R.raw.big_problem).resize(150, 150).centerCrop()
 					// .transform(new
 					// BitmapTransformations.OverlayTransformation(
 					// mContext.getResources(), R.drawable.watermark25))
 					.into(imageView);
 
-//			 if (!foto.isLike()){
-//				 meGusta.setText("No me gusta");
-//			 }
+			// if (!foto.isLike()){
+			// meGusta.setText("No me gusta");
+			// }
 			return imageView;
 		}
+	}
+
+	// boton BACK
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+		case android.R.id.home:
+			startActivityAfterCleanup(MainActivity.class);
+			return true;
+		}
+		return (super.onOptionsItemSelected(menuItem));
+	}
+
+	private void startActivityAfterCleanup(Class<?> cls) {
+		// if (projectsDao != null) projectsDao.close();
+		Intent intent = new Intent(getApplicationContext(), cls);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+	}
+	
+	private class CustomOnItemSelectedListener implements OnItemSelectedListener {
+		 
+	    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+	         
+	    	//TODO eliminar dummy
+	    	Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
+	        DataServicesDummy dummy = new DataServicesDummy();
+	        List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);       
+	    }
+	 
+	    @Override
+	    public void onNothingSelected(AdapterView<?> arg0) {
+	        // TODO Auto-generated method stub
+	 
+	    }
+	 
 	}
 }
