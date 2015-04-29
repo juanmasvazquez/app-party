@@ -1,6 +1,8 @@
 package ar.com.playfree;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -8,10 +10,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import ar.com.playfree.entities.Foto;
-
 import com.squareup.picasso.Picasso;
 
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class FotoGrandeActivity extends Activity {
 
 	ImageButton imageButton;
@@ -23,6 +25,8 @@ public class FotoGrandeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 	//	ImageView imageView = (ImageView) findViewById(R.id.imageView);
+		 getActionBar().setHomeButtonEnabled(true);
+		 getActionBar().setDisplayHomeAsUpEnabled(true); 
 		TouchImageView imageView = (TouchImageView) findViewById(R.id.imageView);
 		
 		int position = getIntent().getIntExtra("position", -1);

@@ -42,7 +42,7 @@ public class DataServicesDummy {
 	public List<Foto> getFotos(Context mContext) {
 		List<Foto> fotos = new ArrayList<Foto>();
 		Foto foto = null;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 130; i++) {
 			foto = new Foto();
 			foto.setId((long) i + 1);
 			foto.setCantLikes(i + 1);
@@ -50,7 +50,7 @@ public class DataServicesDummy {
 			foto.setIdCategoria(1L);
 			foto.setMac("A1-A2-A3-A4");
 			foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
-			foto.setUsuario("andy.suarez@gmail.com");
+			foto.setUsuario("andy.suarez");
 			fotos.add(foto);
 		}
 		return fotos;
@@ -64,7 +64,7 @@ public class DataServicesDummy {
 		foto.setIdCategoria(1L);
 		foto.setMac("A1-A2-A3-A4");
 		foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
-		foto.setUsuario("andy.suarez@gmail.com");
+		foto.setUsuario("andy.suarez");
 		return foto;
 	}
 

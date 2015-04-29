@@ -2,14 +2,14 @@ package ar.com.playfree;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +22,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import ar.com.playfree.entities.Foto;
 import ar.com.playfree.services.DataServicesDummy;
-
 import com.squareup.picasso.Picasso;
 
-@SuppressLint("InflateParams")
+
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class VerFotosActivity extends Activity {
 
 	static List<Foto> fotos = new ArrayList<Foto>();
@@ -33,10 +33,13 @@ public class VerFotosActivity extends Activity {
 	Spinner categorias = null;
 	private Button botonMeGusta = null;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_ver_fotos);
+		 getActionBar().setHomeButtonEnabled(true);
+		 getActionBar().setDisplayHomeAsUpEnabled(true); 
 
 		try {
 			fotos = cargarFotos(this);
