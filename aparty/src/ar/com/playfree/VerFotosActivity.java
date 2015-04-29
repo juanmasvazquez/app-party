@@ -3,7 +3,6 @@ package ar.com.playfree;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +20,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 import ar.com.playfree.entities.Foto;
 import ar.com.playfree.services.DataServicesDummy;
 
@@ -34,17 +32,6 @@ public class VerFotosActivity extends Activity {
 	JSONObject fotosJson = null;
 	Spinner categorias = null;
 	private Button botonMeGusta = null;
-	// JSON Node names
-	private static final String TAG_RESPONSE = "response";
-	private static final String TAG_ERRORMESSAGE = "errorMessage";
-	private static final String TAG_CANTLIKES = "cantLikes";
-	private static final String TAG_ID = "id";
-	private static final String TAG_ID_CATEGORIA = "idCategoria";
-	private static final String TAG_LIKE = "like";
-	private static final String TAG_MAC = "mac";
-	private static final String TAG_URL = "url";
-	private static final String TAG_USUARIO = "usuario";
-	private static final String TAG_SUCCESS = "success";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +39,7 @@ public class VerFotosActivity extends Activity {
 		setContentView(R.layout.activity_ver_fotos);
 
 		try {
-			cargarFotos(this);
+			fotos = cargarFotos(this);
 			cargarCategorias();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -103,7 +90,7 @@ public class VerFotosActivity extends Activity {
 	private List<Foto> cargarFotos(Context context) throws JSONException {
 
 		DataServicesDummy dummy = new DataServicesDummy();
-		return dummy.getFotos(context);
+		return dummy.getFotos(null);
 	}
 
 	// @Override
@@ -175,11 +162,9 @@ public class VerFotosActivity extends Activity {
 					// mContext.getResources(), R.drawable.watermark25))
 					.into(imageView);
 
-			// if (!foto.isMeGusta()){
-			// imageView.setBackgroundResource(R.drawable.watermark25);
-			// imageView.getBackground().setLevel(1000);
-			// //meGusta.setText("No me gusta");
-			// }
+//			 if (!foto.isLike()){
+//				 meGusta.setText("No me gusta");
+//			 }
 			return imageView;
 		}
 	}

@@ -50,6 +50,13 @@ public class FotoGrandeActivity extends Activity {
 		subidaPor.setText(foto.getUsuario());
 
 		botonLike = (Button) findViewById(R.id.botonlike);
+		if (foto.isLike()){
+			botonLike.setText("Ya no me gusta");
+			foto.setLike(false);
+		} else {
+			botonLike.setText("Me gusta");
+			foto.setLike(true);
+		}
 		botonLike.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {				

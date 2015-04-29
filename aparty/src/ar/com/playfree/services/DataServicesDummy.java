@@ -20,8 +20,10 @@ public class DataServicesDummy {
 			foto = new Foto();
 			foto.setId((long) i + 1);
 			foto.setCantLikes(i + 1);
-			foto.setLike((i % 0) == 0);
-			foto.setIdCategoria(((i % 0) == 0) ? 1L : 2L);
+		//	foto.setLike((i % 0) == 0);
+			foto.setLike(Math.random() < 0.5);
+		//	foto.setIdCategoria(((i % 0) == 0) ? 1L : 2L);
+			foto.setIdCategoria(1L);
 			foto.setMac("A1-A2-A3-A4");
 			foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
 			foto.setUsuario("andy.suarez@gmail.com");
@@ -44,7 +46,7 @@ public class DataServicesDummy {
 			foto = new Foto();
 			foto.setId((long) i + 1);
 			foto.setCantLikes(i + 1);
-			foto.setLike((i % 0) == 0);
+			foto.setLike(Math.random() < 0.5);
 			foto.setIdCategoria(1L);
 			foto.setMac("A1-A2-A3-A4");
 			foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
