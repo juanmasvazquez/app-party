@@ -8,37 +8,58 @@
 
         <Button
             android:id="@+id/btnUnirEvento"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_calendar"
-            android:text="@string/button_unirse"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/btnVerAlbum"
-            android:layout_width="135dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnUnirEvento"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_album"
-            android:text="@string/button_album"
-            android:textColor="@android:color/white" />
+            android:background="@drawable/pressed_calendar" />
 
         <Button
             android:id="@+id/btnCapture"
-            android:layout_width="135dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignLeft="@+id/btnUnirEvento"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/pressed_camera" />
+
+        <Button
+            android:id="@+id/btnVerAlbum"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignLeft="@+id/btnUnirEvento"
+            android:layout_below="@+id/btnUnirEvento"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/pressed_album" />
+
+        <TextView
+            android:id="@+id/textViewCapturar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/btnUnirEvento"
             android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_camera"
             android:text="@string/button_capturar"
+            android:textSize="15sp"
             android:textColor="@android:color/white" />
-       
 
+        <TextView
+            android:id="@+id/textViewUnirse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnUnirEvento"
+            android:layout_centerHorizontal="true"
+            android:text="@string/button_unirse"
+            android:textSize="15sp"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/textViewAlbum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/button_album"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
 
 </RelativeLayout>

@@ -24,6 +24,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -41,9 +42,11 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// Set textview font
+		TextView textCapturar = (TextView) findViewById(R.id.textViewCapturar);
+		textCapturar.setTypeface(tf);
 		// Boton Capturar Foto --------------------
 		Button btnCaptura = (Button) findViewById(R.id.btnCapture);
-		btnCaptura.setTypeface(tf);
 		btnCaptura.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				final String dir = Environment
@@ -72,9 +75,11 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		// Set textview font
+		TextView textAlbum = (TextView) findViewById(R.id.textViewAlbum);
+		textAlbum.setTypeface(tf);
 		// Boton Ver Album --------------------
 		Button btnVerAlbum = (Button) findViewById(R.id.btnVerAlbum);
-		btnVerAlbum.setTypeface(tf);
 		btnVerAlbum.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent verFotosIntent = new Intent(MainActivity.this,
@@ -83,9 +88,11 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		// Set textview font
+		TextView textUnirse = (TextView) findViewById(R.id.textViewUnirse);
+		textUnirse.setTypeface(tf);
 		// Boton unir Evento --------------------
 		Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
-		btnUnirEvento.setTypeface(tf);
 		btnUnirEvento.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent unirEventoIntent = new Intent(MainActivity.this,
