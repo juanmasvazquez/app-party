@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-    
-    <ar.com.playfree.TouchImageView
+
+    <ar.com.playfree.views.TouchImageView
         android:id="@+id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
@@ -16,15 +16,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:src="@drawable/facebooklike2" />
-
-    <!-- <TextView -->
-    <!-- android:id="@+id/tocaLaFoto" -->
-    <!-- android:layout_width="wrap_content" -->
-    <!-- android:layout_height="wrap_content" -->
-    <!-- android:layout_alignParentTop="true" -->
-    <!-- android:layout_centerHorizontal="true" -->
-    <!-- android:text="@string/tocaLaFoto" -->
-    <!-- android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 
     <TextView
         android:id="@+id/cantLikes"
@@ -57,5 +48,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:text="@string/meGusta" />
+
 
 </RelativeLayout>

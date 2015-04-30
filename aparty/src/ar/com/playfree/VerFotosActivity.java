@@ -2,29 +2,36 @@ package ar.com.playfree;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONException;
-import org.json.JSONObject;
-import android.annotation.SuppressLint;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
+import ar.com.playfree.adapters.SpinAdapter;
 import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Foto;
 import ar.com.playfree.services.DataServicesDummy;
+
 import com.squareup.picasso.Picasso;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -42,7 +49,8 @@ public class VerFotosActivity extends Activity {
 		getActionBar().setDisplayShowHomeEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra("album");
+		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+				"album");
 
 		try {
 			if (null == album) {
@@ -84,14 +92,16 @@ public class VerFotosActivity extends Activity {
 		// dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// categorias.setAdapter(dataAdapter);
 		// addListenerOnSpinnerItemSelection();
-		adapter = new SpinAdapter(VerFotosActivity.this, android.R.layout.simple_spinner_item, list);
-		categorias.setAdapter(adapter); 
+		adapter = new SpinAdapter(VerFotosActivity.this,
+				android.R.layout.simple_spinner_item, list);
+		categorias.setAdapter(adapter);
 		addListenerOnSpinnerItemSelection();
 	}
 
 	public void addListenerOnSpinnerItemSelection() {
 
-		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		categorias
+				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
 	private List<Foto> cargarFotos(Context context) throws JSONException {
@@ -123,14 +133,14 @@ public class VerFotosActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			ImageView imageView;			
-			if (convertView == null) {				
+
+			ImageView imageView;
+			if (convertView == null) {
 				imageView = new ImageView(mContext);
-			} else {				
+			} else {
 				imageView = (ImageView) convertView;
 			}
-			
+
 			Picasso picasso = Picasso.with(mContext);
 			Foto foto = (Foto) fotos.get(position);
 			picasso.load(foto.getUrl()).placeholder(R.raw.place_holder)
@@ -140,21 +150,62 @@ public class VerFotosActivity extends Activity {
 					// mContext.getResources(), R.drawable.watermark25))
 					.into(imageView);
 
-			// if (!foto.isLike()){
-			// meGusta.setText("No me gusta");
-			// }
+			if (foto.isLike()) {
+				Bitmap water = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.facebooklike23);
+				imageView.setDrawingCacheEnabled(true);
+				imageView.measure(MeasureSpec.makeMeasureSpec(0,MeasureSpec.UNSPECIFIED), MeasureSpec
+								.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+				imageView.layout(0, 0, imageView.getMeasuredWidth(), imageView.getMeasuredHeight());
+				imageView.buildDrawingCache(true);
+				Bitmap principal = Bitmap.createBitmap(imageView.getDrawingCache());
+				Bitmap bmOverlay = Bitmap.createBitmap(150, 150, principal.getConfig());
+				imageView.setDrawingCacheEnabled(false);
+				Canvas canvas = new Canvas(bmOverlay);
+				canvas.drawBitmap(principal, 0, 0, null);
+				canvas.drawBitmap(water, 0, 110, null);
+
+				imageView.setImageBitmap(bmOverlay);
+			}
+
 			return imageView;
+
+			// return imageView;
 		}
+	}
+
+	public static Bitmap getBitmapFromView(View view) {
+		// Define a bitmap with the same size as the view
+		Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(),
+				view.getHeight(), Bitmap.Config.ARGB_8888);
+		// Bind a canvas to it
+		Canvas canvas = new Canvas(returnedBitmap);
+		// Get the view's background
+		Drawable bgDrawable = view.getBackground();
+		if (bgDrawable != null)
+			// has background drawable, then draw it on the canvas
+			bgDrawable.draw(canvas);
+		else
+			// does not have background drawable, then draw white background on
+			// the canvas
+			canvas.drawColor(Color.WHITE);
+		// draw the view on the canvas
+		view.draw(canvas);
+		// return the bitmap
+		return returnedBitmap;
 	}
 
 	// boton BACK
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		int id = menuItem.getItemId();
 		switch (menuItem.getItemId()) {
 		case android.R.id.home:
 			startActivityAfterCleanup(MainActivity.class);
 			return true;
 		}
+		if (id == R.id.action_settings) {
+			return true;
+		} 
 		return (super.onOptionsItemSelected(menuItem));
 	}
 
@@ -164,22 +215,38 @@ public class VerFotosActivity extends Activity {
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
-	
-	private class CustomOnItemSelectedListener implements OnItemSelectedListener {
-		 
-	    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-	         
-	    	//TODO eliminar dummy
-	    	Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
-	        DataServicesDummy dummy = new DataServicesDummy();
-	        List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);       
-	    }
-	 
-	    @Override
-	    public void onNothingSelected(AdapterView<?> arg0) {
-	        // TODO Auto-generated method stub
-	 
-	    }
-	 
+
+	private class CustomOnItemSelectedListener implements
+			OnItemSelectedListener {
+
+		public void onItemSelected(AdapterView<?> parent, View view, int pos,
+				long id) {
+
+			// TODO eliminar dummy
+			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
+			DataServicesDummy dummy = new DataServicesDummy();
+			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
+	
+
+
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		// Handle action bar item clicks here. The action bar will
+//		// automatically handle clicks on the Home/Up button, so long
+//		// as you specify a parent activity in AndroidManifest.xml.
+//		int id = item.getItemId();
+//		if (id == R.id.action_settings) {
+//			return true;
+//		}
+//		return super.onOptionsItemSelected(item);
+//	}
 }
