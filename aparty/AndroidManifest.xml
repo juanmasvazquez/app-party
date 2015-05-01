@@ -52,10 +52,6 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".AAMainActivity"
-            android:label="@string/title_activity_aamain" >
-        </activity>
     </application>
 
 </manifest>
