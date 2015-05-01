@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import ar.com.playfree.entities.Foto;
 import ar.com.playfree.views.TouchImageView;
 
@@ -118,9 +120,8 @@ public class FotoGrandeActivity extends Activity {
 				String url = fotoElegida.getUrl();
 				DownloadManager.Request request = new DownloadManager.Request(
 						Uri.parse(url));
-				request.setDescription("Some descrition");
-				request.setTitle(appName + '-'
-						+ String.valueOf(fotoElegida.getId()));
+				request.setDescription(appName + '-' + String.valueOf(fotoElegida.getId()));
+				request.setTitle(appName + '-' + String.valueOf(fotoElegida.getId()) + ".jpg");
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					request.allowScanningByMediaScanner();
 					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -138,12 +139,10 @@ public class FotoGrandeActivity extends Activity {
 	}
 
 	protected void doDownload(final String urlLink, final String fileName) {
-		Thread dx = new Thread() {
-
-			public void run() {
-				File root = android.os.Environment
-						.getExternalStorageDirectory();
-				File dir = new File(root.getAbsolutePath() + "//" + appName +"//");
+		Thread dx = new Thread() {			
+			public void run() {				
+				File root = android.os.Environment.getExternalStorageDirectory();
+				File dir = new File(root.getAbsolutePath() + "/Download/");
 				if (dir.exists() == false) {
 					dir.mkdirs();
 				}
@@ -160,6 +159,8 @@ public class FotoGrandeActivity extends Activity {
 					int fileLength = connection.getContentLength();
 
 					// download the file
+					
+					Toast.makeText(getApplicationContext(), "Descargando Imagen", Toast.LENGTH_LONG).show();
 					InputStream input = new BufferedInputStream(
 							url.openStream());
 					OutputStream output = new FileOutputStream(dir + "/"
@@ -182,8 +183,10 @@ public class FotoGrandeActivity extends Activity {
 					Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" + e);
 				}
 			}
-		};
+		};		
 		dx.start();
+		Toast.makeText(getApplicationContext(), "Imagen Descargada", Toast.LENGTH_LONG).show();
+
 	}
 
 	private void startActivityAfterCleanup(Class<?> cls) {
