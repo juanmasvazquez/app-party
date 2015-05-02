@@ -32,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import ar.com.playfree.entities.Foto;
+import ar.com.playfree.services.DataServicesDummy;
 import ar.com.playfree.views.TouchImageView;
 
 import com.squareup.picasso.Picasso;
@@ -59,16 +60,23 @@ public class FotoGrandeActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		TouchImageView imageView = (TouchImageView) findViewById(R.id.imageView);
 
-		int position = getIntent().getIntExtra("position", -1);
+		final int position = getIntent().getIntExtra("position", -1);
 		final Foto foto = (Foto) getIntent().getSerializableExtra("foto");
 		fotoElegida = foto;
 		if (position != -1) {
-			Picasso.with(FotoGrandeActivity.this).load(foto.getUrl())
-					.placeholder(R.raw.place_holder).resize(800, 800)
-					.centerInside().error(R.raw.big_problem).into(imageView);
+			Picasso.with(FotoGrandeActivity.this)
+				.load(foto.getUrl())
+				.placeholder(R.raw.place_holder)
+				.resize(800, 800)
+				.centerInside()
+				.error(R.raw.big_problem)
+				.into(imageView);
 		} else {
-			Picasso.with(FotoGrandeActivity.this).load(R.raw.big_problem)
-					.resize(800, 800).centerCrop().into(imageView);
+			Picasso.with(FotoGrandeActivity.this)
+				.load(R.raw.big_problem)
+				.resize(800, 800)
+				.centerCrop()
+				.into(imageView);
 		}
 
 		TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
@@ -76,7 +84,6 @@ public class FotoGrandeActivity extends Activity {
 
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(foto.getUsuario());
-
 		botonLike = (Button) findViewById(R.id.botonlike);
 		if (foto.isLike()) {
 			botonLike.setText("Ya no me gusta");
@@ -85,16 +92,21 @@ public class FotoGrandeActivity extends Activity {
 			botonLike.setText("Me gusta");
 			foto.setLike(true);
 		}
+		final DataServicesDummy dummy = new DataServicesDummy();
+		
 		botonLike.setOnClickListener(new OnClickListener() {
+			Foto fotoConMeGusta = null;
 			@Override
 			public void onClick(View arg0) {
 				if (foto.isLike()) {
-					botonLike.setText("Ya no me gusta");
-					foto.setLike(false);
+					fotoConMeGusta = dummy.sendLikeFoto(foto.getId(), getApplicationContext());					
 				} else {
-					botonLike.setText("Me gusta");
-					foto.setLike(true);
+					fotoConMeGusta = dummy.sendNoLikeFoto(foto.getId(), getApplicationContext());
 				}
+				Intent i = new Intent(FotoGrandeActivity.this, FotoGrandeActivity.class);
+				i.putExtra("position", position);
+				i.putExtra("foto", fotoConMeGusta);
+				startActivity(i);
 
 				// Toast.makeText(FotoGrandeActivity.this, msg,
 				// Toast.LENGTH_SHORT).show();

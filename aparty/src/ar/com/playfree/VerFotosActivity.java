@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,8 @@ public class VerFotosActivity extends Activity {
 	static List<Foto> fotos = new ArrayList<Foto>();
 	Spinner categorias = null;
 	DataServicesDummy dummy = new DataServicesDummy();
+	ImageAdapter imageAdapter;
+	GridView gridview;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -64,9 +67,9 @@ public class VerFotosActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		GridView gridview = (GridView) findViewById(R.id.gridview);
-		gridview.setAdapter(new ImageAdapter(this));
-
+		gridview = (GridView) findViewById(R.id.gridview);
+		imageAdapter = new ImageAdapter(this, album);
+		gridview.setAdapter(imageAdapter);
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -84,27 +87,17 @@ public class VerFotosActivity extends Activity {
 		categorias = (Spinner) findViewById(R.id.categorias);
 		List<Categoria> list = dummy.getCategorias(null);
 		SpinAdapter adapter;
-		// for (Categoria categoria : list){
-		// lista.add(categoria.getNombre());
-		// }
-		// ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-		// android.R.layout.simple_spinner_item, lista);
-		// dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		// categorias.setAdapter(dataAdapter);
-		// addListenerOnSpinnerItemSelection();
-		adapter = new SpinAdapter(VerFotosActivity.this,
-				android.R.layout.simple_spinner_item, list);
+		adapter = new SpinAdapter(VerFotosActivity.this, android.R.layout.simple_spinner_item, list);
 		categorias.setAdapter(adapter);
 		addListenerOnSpinnerItemSelection();
 	}
 
 	public void addListenerOnSpinnerItemSelection() {
 
-		categorias
-				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
-	private List<Foto> cargarFotos(Context context) throws JSONException {
+	private List<Foto> cargarFotos(Context context) throws Exception {
 
 		return dummy.getFotos(null);
 	}
@@ -112,8 +105,11 @@ public class VerFotosActivity extends Activity {
 	private class ImageAdapter extends BaseAdapter {
 		private Context mContext;
 
-		public ImageAdapter(Context context) {
+		public ImageAdapter(Context context, List<Foto> album) {
 			mContext = context;
+			if (null != album){
+				fotos = album;
+			}
 		}
 
 		@Override
@@ -144,10 +140,9 @@ public class VerFotosActivity extends Activity {
 			Picasso picasso = Picasso.with(mContext);
 			Foto foto = (Foto) fotos.get(position);
 			picasso.load(foto.getUrl()).placeholder(R.raw.place_holder)
-					.error(R.raw.big_problem).resize(150, 150).centerCrop()
-					// .transform(new
-					// BitmapTransformations.OverlayTransformation(
-					// mContext.getResources(), R.drawable.watermark25))
+					.error(R.raw.big_problem)
+					.resize(150, 150)
+					.centerCrop()
 					.into(imageView);
 
 			if (foto.isLike()) {
@@ -162,14 +157,12 @@ public class VerFotosActivity extends Activity {
 				imageView.setDrawingCacheEnabled(false);
 				Canvas canvas = new Canvas(bmOverlay);
 				canvas.drawBitmap(principal, 0, 0, null);
-				canvas.drawBitmap(water, 0, 110, null);
+				canvas.drawBitmap(water, 0, 110, null); 
 
 				imageView.setImageBitmap(bmOverlay);
 			}
 
 			return imageView;
-
-			// return imageView;
 		}
 	}
 
@@ -189,7 +182,6 @@ public class VerFotosActivity extends Activity {
 	}
 
 	private void startActivityAfterCleanup(Class<?> cls) {
-		// if (projectsDao != null) projectsDao.close();
 		Intent intent = new Intent(getApplicationContext(), cls);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
@@ -205,6 +197,10 @@ public class VerFotosActivity extends Activity {
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
 			DataServicesDummy dummy = new DataServicesDummy();
 			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
+			imageAdapter = new ImageAdapter(getApplicationContext(), album);
+			android.os.SystemClock.sleep(1000);
+			gridview.setAdapter(imageAdapter);
+	
 		}
 
 		@Override
@@ -215,17 +211,42 @@ public class VerFotosActivity extends Activity {
 
 	}
 	
+	@Override
+	public void onRestart() { 
+	    super.onRestart();	   
+		setContentView(R.layout.activity_ver_fotos);
+		getActionBar().setDisplayShowHomeEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+				"album");
 
+		try {
+			if (null == album) {
+				fotos = cargarFotos(this);
+			} else {
+				fotos = album;
+			}
+			cargarCategorias();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		// Handle action bar item clicks here. The action bar will
-//		// automatically handle clicks on the Home/Up button, so long
-//		// as you specify a parent activity in AndroidManifest.xml.
-//		int id = item.getItemId();
-//		if (id == R.id.action_settings) {
-//			return true;
-//		}
-//		return super.onOptionsItemSelected(item);
-//	}
+		gridview = (GridView) findViewById(R.id.gridview);
+		imageAdapter = new ImageAdapter(this, album);
+		gridview.setAdapter(imageAdapter);
+		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				Intent i = new Intent(VerFotosActivity.this,
+						FotoGrandeActivity.class);
+				i.putExtra("position", position);
+				i.putExtra("foto", (Foto) fotos.get(position));
+				startActivity(i);
+			}
+		});
+	}
+	
 }
