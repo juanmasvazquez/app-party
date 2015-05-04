@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
@@ -25,6 +26,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import ar.com.playfree.services.DataServices;
 
 public class MainActivity extends Activity {
@@ -36,14 +38,29 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-		// Font path
-		String fontPath = "fonts/Roboto-Bold.ttf";
-		// Loading Font Face
+		// Setear la fuente a utilizar en el mainActivity
+		String fontPath = "fonts/Roboto-Thin.ttf";
 		Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
+
+		// Cambiar la fuente del actionbar
+		int actionBarTitle = Resources.getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+		TextView actionBarTitleView = (TextView) getWindow().findViewById(
+				actionBarTitle);
+		Typeface forte = Typeface.createFromAsset(getAssets(), fontPath);
+		if (actionBarTitleView != null) {
+			actionBarTitleView.setTypeface(forte);
+			actionBarTitleView.setTextSize(20);
+		}
+		// Cambiar titulo del actionbar
+		// getActionBar().setTitle("SAMPLE");
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// Set textview font
+		TextView textCapturar = (TextView) findViewById(R.id.textViewCapturar);
+		textCapturar.setTypeface(tf);
 		// Boton Capturar Foto --------------------
 		Button btnCaptura = (Button) findViewById(R.id.btnCapture);
 		btnCaptura.setTypeface(tf);
@@ -75,6 +92,9 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		// Set textview font
+		TextView textAlbum = (TextView) findViewById(R.id.textViewAlbum);
+		textAlbum.setTypeface(tf);
 		// Boton Ver Album --------------------
 		Button btnVerAlbum = (Button) findViewById(R.id.btnVerAlbum);
 		btnVerAlbum.setTypeface(tf);
@@ -86,6 +106,9 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		// Set textview font
+		TextView textUnirse = (TextView) findViewById(R.id.textViewUnirse);
+		textUnirse.setTypeface(tf);
 		// Boton unir Evento --------------------
 		Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
 		btnUnirEvento.setTypeface(tf);
