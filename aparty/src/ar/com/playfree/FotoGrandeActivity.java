@@ -3,8 +3,11 @@ package ar.com.playfree;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -18,11 +21,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,44 +50,65 @@ public class FotoGrandeActivity extends Activity {
 	Foto fotoElegida = new Foto();
 	ProgressDialog progressDialog;
 	String appName = "";
+	TouchImageView imageView = null;
+	ProgressDialog pd;
+	Context context;
+	String storeDir;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
-		Context context = getApplicationContext();
+		context = getApplicationContext();
 		appName = context.getString(context.getApplicationInfo().labelRes);
-		// ImageView imageView = (ImageView) findViewById(R.id.imageView);
 		getActionBar().setDisplayShowHomeEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		TouchImageView imageView = (TouchImageView) findViewById(R.id.imageView);
+		imageView = (TouchImageView) findViewById(R.id.imageView);
+		
 
 		final int position = getIntent().getIntExtra("position", -1);
 		final Foto foto = (Foto) getIntent().getSerializableExtra("foto");
 		fotoElegida = foto;
 		if (position != -1) {
-			Picasso.with(FotoGrandeActivity.this)
-				.load(foto.getUrl())
-				.placeholder(R.raw.place_holder)
-				.resize(800, 800)
-				.centerInside()
-				.error(R.raw.big_problem)
-				.into(imageView);
+			Picasso.with(FotoGrandeActivity.this).load(foto.getUrl())
+					.placeholder(R.raw.place_holder).resize(800, 800)
+					.centerInside().error(R.raw.big_problem).into(imageView);
 		} else {
-			Picasso.with(FotoGrandeActivity.this)
-				.load(R.raw.big_problem)
-				.resize(800, 800)
-				.centerCrop()
-				.into(imageView);
+			Picasso.with(FotoGrandeActivity.this).load(R.raw.big_problem)
+					.resize(800, 800).centerCrop().into(imageView);
 		}
 
-		TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
+		final TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
 		cantLikes.setText(String.valueOf(foto.getCantLikes()));
 
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(foto.getUsuario());
 		botonLike = (Button) findViewById(R.id.botonlike);
+		chequearLikes(foto);		
+		final DataServicesDummy dummy = new DataServicesDummy();
+
+		botonLike.setOnClickListener(new OnClickListener() {
+		Foto fotoConMeGusta = null;
+
+			@Override
+			public void onClick(View arg0) {
+				if (foto.isLike()) {
+					fotoConMeGusta = dummy.sendLikeFoto(foto.getId(),
+							getApplicationContext());
+				} else {
+					fotoConMeGusta = dummy.sendNoLikeFoto(foto.getId(),
+							getApplicationContext());
+				}				
+				chequearLikes(foto);		
+				cantLikes.setText(String.valueOf(fotoConMeGusta.getCantLikes()));
+				
+			}
+		});
+
+	}
+
+	private void chequearLikes(Foto foto) {
 		if (foto.isLike()) {
 			botonLike.setText("Ya no me gusta");
 			foto.setLike(false);
@@ -92,48 +116,26 @@ public class FotoGrandeActivity extends Activity {
 			botonLike.setText("Me gusta");
 			foto.setLike(true);
 		}
-		final DataServicesDummy dummy = new DataServicesDummy();
 		
-		botonLike.setOnClickListener(new OnClickListener() {
-			Foto fotoConMeGusta = null;
-			@Override
-			public void onClick(View arg0) {
-				if (foto.isLike()) {
-					fotoConMeGusta = dummy.sendLikeFoto(foto.getId(), getApplicationContext());					
-				} else {
-					fotoConMeGusta = dummy.sendNoLikeFoto(foto.getId(), getApplicationContext());
-				}
-				Intent i = new Intent(FotoGrandeActivity.this, FotoGrandeActivity.class);
-				i.putExtra("position", position);
-				i.putExtra("foto", fotoConMeGusta);
-				startActivity(i);
-
-				// Toast.makeText(FotoGrandeActivity.this, msg,
-				// Toast.LENGTH_SHORT).show();
-				// Intent verFotosIntent = new Intent(FotoGrandeActivity.this,
-				// VerFotosActivity.class);
-				// startActivity(verFotosIntent);
-
-			}
-		});
-
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 
-	
 		switch (menuItem.getItemId()) {
 		case android.R.id.home:
 			startActivityAfterCleanup(VerFotosActivity.class);
 			return true;
 		case R.id.bajarFoto:
+			Toast.makeText(getApplicationContext(), "Descargando Imagen...", Toast.LENGTH_LONG).show();
 			if (isDownloadManagerAvailable(getApplicationContext())) {
 				String url = fotoElegida.getUrl();
 				DownloadManager.Request request = new DownloadManager.Request(
 						Uri.parse(url));
-				request.setDescription(appName + '-' + String.valueOf(fotoElegida.getId()));
-				request.setTitle(appName + '-' + String.valueOf(fotoElegida.getId()) + ".jpg");
+				request.setDescription(appName + '-'
+						+ String.valueOf(fotoElegida.getId()));
+				request.setTitle(appName + '-'
+						+ String.valueOf(fotoElegida.getId()) + ".jpg");
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					request.allowScanningByMediaScanner();
 					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -144,17 +146,21 @@ public class FotoGrandeActivity extends Activity {
 				DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 				manager.enqueue(request);
 			} else {
-				doDownload(fotoElegida.getUrl(), appName + '-' + fotoElegida.getId() + ".jpg");
-			}
+				doDownload(fotoElegida.getUrl(),
+						appName + '-' + fotoElegida.getId() + ".jpg");
+			//downloadFile();
+			 }
 		}
 		return true;
 	}
 
 	protected void doDownload(final String urlLink, final String fileName) {
-		Thread dx = new Thread() {			
-			public void run() {				
-				File root = android.os.Environment.getExternalStorageDirectory();
-				File dir = new File(root.getAbsolutePath() + "/Download/");
+		Thread dx = new Thread() {
+			public void run() {
+				File root = android.os.Environment
+						.getExternalStorageDirectory();
+				// File dir = new File(root.getAbsolutePath() + "/Download/");
+				File dir = new File(Environment.DIRECTORY_DOWNLOADS);
 				if (dir.exists() == false) {
 					dir.mkdirs();
 				}
@@ -171,8 +177,9 @@ public class FotoGrandeActivity extends Activity {
 					int fileLength = connection.getContentLength();
 
 					// download the file
-					
-					Toast.makeText(getApplicationContext(), "Descargando Imagen", Toast.LENGTH_LONG).show();
+
+					Toast.makeText(getApplicationContext(),
+							"Descargando Imagen", Toast.LENGTH_LONG).show();
 					InputStream input = new BufferedInputStream(
 							url.openStream());
 					OutputStream output = new FileOutputStream(dir + "/"
@@ -195,9 +202,10 @@ public class FotoGrandeActivity extends Activity {
 					Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" + e);
 				}
 			}
-		};		
+		};
 		dx.start();
-		Toast.makeText(getApplicationContext(), "Imagen Descargada", Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), "Imagen Descargada",
+				Toast.LENGTH_LONG).show();
 
 	}
 
@@ -239,4 +247,115 @@ public class FotoGrandeActivity extends Activity {
 		}
 	}
 
+	
+	public void downloadFile() {
+		storeDir = createStoreDir();
+		if (storeDir != null) {
+			try {
+
+				BackTask bt = new BackTask();
+				bt.execute(fotoElegida.getUrl());
+
+			} catch (Exception e) {
+			}
+		} else {
+			Toast.makeText(this, "Folder can't be create. Download failed.",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	public String createStoreDir() {
+		String storeDir = Environment.getExternalStorageDirectory()
+				+ "/edoc_download";
+		File f = new File(storeDir);
+		if (!f.exists())
+			if (!f.mkdir()) {
+				Log.e("Error", "Can't create edoc_download directory");
+				return null;
+			} else
+				return storeDir;
+		else
+			return storeDir;
+	}
+
+	// background process to download the file from server
+	private class BackTask extends AsyncTask<String, Integer, Void> {
+		protected void onPreExecute() {
+			super.onPreExecute();
+			pd = new ProgressDialog(context);
+			pd.setTitle("Downloading the file to " + storeDir);
+			pd.setMessage("Please wait.");
+			pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			pd.setMax(100);
+			pd.setCancelable(true);
+			pd.setIndeterminate(false);
+			pd.show();
+
+		}
+
+		protected Void doInBackground(String... params) {
+			URL url;
+			int count;
+			try {
+
+				url = new URL(params[0]);  
+				String outpath = "";
+				try {
+
+					File f = new File(storeDir);
+					if (f.exists()) {
+						HttpURLConnection con = (HttpURLConnection) url
+								.openConnection();
+						InputStream is = con.getInputStream();
+						String fullpath = url.getPath();
+						String filename = fullpath.substring(fullpath
+								.lastIndexOf('/') + 1);
+						outpath = storeDir + "/" + filename;
+						FileOutputStream fos = new FileOutputStream(outpath);
+						int lenghtOfFile = con.getContentLength();
+						byte data[] = new byte[1024];
+						long total = 0;
+						while ((count = is.read(data)) != -1) {
+							total += count;
+							// publishing the progress
+							publishProgress((int) ((total * 100) / lenghtOfFile));
+							// writing data to output file
+							fos.write(data, 0, count);
+						}
+
+						is.close();
+						fos.flush();
+						fos.close();
+					} else {
+						Log.e("Error", "Not found: " + storeDir);
+
+					}
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				// //
+
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return null;
+
+		}
+
+		protected void onProgressUpdate(Integer... progress) {
+			// setting progress percentage
+			pd.setProgress(progress[0]);
+		}
+
+		protected void onPostExecute(Void result) {
+
+			pd.dismiss();
+
+		}
+
+	}
 }

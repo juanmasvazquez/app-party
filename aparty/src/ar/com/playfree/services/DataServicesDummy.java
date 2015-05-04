@@ -16,31 +16,7 @@ public class DataServicesDummy {
 	private static List<Foto> fotos = new ArrayList<Foto>();
 
 	public DataServicesDummy() {
-		Foto foto = null;
-		for (int i = 0; i < 10; i++) {
-			foto = new Foto();
-			foto.setId((long) i + 1);
-			foto.setCantLikes(i + 1);
-		//	foto.setLike((i % 0) == 0);
-			foto.setLike(Math.random() < 0.5);
-			foto.setIdCategoria(1L);
-			foto.setMac("A1-A2-A3-A4");
-			foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
-			foto.setUsuario("andy.suarez");
-			fotos.add(foto);
-		}
-		for (int i = 10; i < 20; i++) {
-			foto = new Foto();
-			foto.setId((long) i + 1);
-			foto.setCantLikes(i + 1);
-		//	foto.setLike((i % 0) == 0);
-			foto.setLike(Math.random() < 0.5);
-			foto.setIdCategoria(2L);
-			foto.setMac("A1-A2-A3-A4");
-			foto.setUrl("http://fc02.deviantart.net/fs70/f/2012/120/5/9/thundercats_1985_2011_logo_by_pencilshade-d4y2uzr.png");
-			foto.setUsuario("andy.suarez");
-			fotos.add(foto);
-		}
+
 	}
 
 	public Evento connectTo(String codigoEvento) throws ServiceException {
@@ -52,7 +28,6 @@ public class DataServicesDummy {
 	}
 
 	public List<Foto> getFotos(Context mContext) {
-		List<Foto> fotos = new ArrayList<Foto>();
 		Foto foto = null;
 		for (int i = 0; i < 130; i++) {
 			foto = new Foto();
@@ -62,6 +37,17 @@ public class DataServicesDummy {
 			foto.setIdCategoria(1L);	
 			foto.setMac("A1-A2-A3-A4");
 			foto.setUrl("http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Intel-logo.svg/2000px-Intel-logo.svg.png");
+			foto.setUsuario("andy.suarez");
+			fotos.add(foto);
+		}
+		for (int i = 0; i < 530; i++) {
+			foto = new Foto();
+			foto.setId((long) i + 1);
+			foto.setCantLikes(i + 1);
+			foto.setLike(Math.random() < 0.5);
+			foto.setIdCategoria(2L);	
+			foto.setMac("A1-A2-A3-A4");
+			foto.setUrl("http://pngimg.com/upload/car_logo_PNG1668.png");
 			foto.setUsuario("andy.suarez");
 			fotos.add(foto);
 		}
@@ -82,8 +68,11 @@ public class DataServicesDummy {
 
 	public List<Categoria> getCategorias(Context mContext) {
 		List<Categoria> categorias = new ArrayList<Categoria>();
-		Categoria categoria = null;
-		for (int i = 0; i < 2; i++) {
+		Categoria categoria = new Categoria();
+		categoria.setId(0L);
+		categoria.setNombre("GENERAL");
+		categorias.add(categoria);
+		for (int i = 0; i < 5; i++) {
 			categoria = new Categoria();
 			categoria.setId((long) i + 1);
 			categoria.setNombre("CATEGORIA " + (i + 1));
@@ -94,6 +83,9 @@ public class DataServicesDummy {
 
 	public List<Foto> getFotosCategoria(Long idCategoria, Context mContext) {
 		List<Foto> fotosCategorias = new ArrayList<Foto>();
+		if (idCategoria.equals(0L)){
+			fotosCategorias = getFotos(null);
+		}
 		for (Foto foto : fotos) {
 			if (foto.getIdCategoria().equals(idCategoria)) {
 				fotosCategorias.add(foto);

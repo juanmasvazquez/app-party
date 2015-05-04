@@ -68,7 +68,7 @@ public class VerFotosActivity extends Activity {
 		}
 
 		gridview = (GridView) findViewById(R.id.gridview);
-		imageAdapter = new ImageAdapter(this, album);
+		imageAdapter = new ImageAdapter(this, fotos);		
 		gridview.setAdapter(imageAdapter);
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -145,7 +145,7 @@ public class VerFotosActivity extends Activity {
 					.centerCrop()
 					.into(imageView);
 
-			if (foto.isLike()) {
+			if (foto.isLike()) {				
 				Bitmap water = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.facebooklike23);
 				imageView.setDrawingCacheEnabled(true);
 				imageView.measure(MeasureSpec.makeMeasureSpec(0,MeasureSpec.UNSPECIFIED), MeasureSpec
@@ -157,8 +157,7 @@ public class VerFotosActivity extends Activity {
 				imageView.setDrawingCacheEnabled(false);
 				Canvas canvas = new Canvas(bmOverlay);
 				canvas.drawBitmap(principal, 0, 0, null);
-				canvas.drawBitmap(water, 0, 110, null); 
-
+				canvas.drawBitmap(water, 0, 110, null);
 				imageView.setImageBitmap(bmOverlay);
 			}
 
@@ -197,10 +196,12 @@ public class VerFotosActivity extends Activity {
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
 			DataServicesDummy dummy = new DataServicesDummy();
 			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
-			imageAdapter = new ImageAdapter(getApplicationContext(), album);
 			android.os.SystemClock.sleep(1000);
-			gridview.setAdapter(imageAdapter);
-	
+			if (album.size() == 0){
+				
+			}			
+			imageAdapter = new ImageAdapter(getApplicationContext(), album);
+			gridview.setAdapter(imageAdapter); 	
 		}
 
 		@Override
@@ -211,42 +212,42 @@ public class VerFotosActivity extends Activity {
 
 	}
 	
-	@Override
-	public void onRestart() { 
-	    super.onRestart();	   
-		setContentView(R.layout.activity_ver_fotos);
-		getActionBar().setDisplayShowHomeEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-				"album");
-
-		try {
-			if (null == album) {
-				fotos = cargarFotos(this);
-			} else {
-				fotos = album;
-			}
-			cargarCategorias();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		gridview = (GridView) findViewById(R.id.gridview);
-		imageAdapter = new ImageAdapter(this, album);
-		gridview.setAdapter(imageAdapter);
-		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				Intent i = new Intent(VerFotosActivity.this,
-						FotoGrandeActivity.class);
-				i.putExtra("position", position);
-				i.putExtra("foto", (Foto) fotos.get(position));
-				startActivity(i);
-			}
-		});
-	}
+//	@Override
+//	public void onRestart() { 
+//	    super.onRestart();	   
+//		setContentView(R.layout.activity_ver_fotos);
+//		getActionBar().setDisplayShowHomeEnabled(true);
+//		getActionBar().setHomeButtonEnabled(true);
+//		getActionBar().setDisplayHomeAsUpEnabled(true);
+//		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+//				"album");
+//
+//		try {
+//			if (null == album) {
+//				fotos = cargarFotos(this);
+//			} else {
+//				fotos = album;
+//			}
+//			cargarCategorias();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		gridview = (GridView) findViewById(R.id.gridview);
+//		imageAdapter = new ImageAdapter(this, album);
+//		gridview.setAdapter(imageAdapter);
+//		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View v,
+//					int position, long id) {
+//				Intent i = new Intent(VerFotosActivity.this,
+//						FotoGrandeActivity.class);
+//				i.putExtra("position", position);
+//				i.putExtra("foto", (Foto) fotos.get(position));
+//				startActivity(i);
+//			}
+//		});
+//	}
 	
 }
