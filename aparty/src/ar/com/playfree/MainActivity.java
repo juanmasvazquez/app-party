@@ -139,10 +139,10 @@ public class MainActivity extends Activity {
 	// -------------------------------------------------------------------------
 
 	private void sendPhoto(File file) throws Exception {
-		new UploadTask().execute(file);
+		new CameraTask().execute(file);
 	}
 
-	private class UploadTask extends AsyncTask<File, Void, Void> {
+	private class CameraTask extends AsyncTask<File, Void, Void> {
 
 		protected Void doInBackground(File... files) {
 			if (files[0] == null)

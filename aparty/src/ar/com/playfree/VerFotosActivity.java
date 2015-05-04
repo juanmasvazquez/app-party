@@ -1,9 +1,8 @@
 package ar.com.playfree;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONException;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -12,12 +11,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -31,6 +27,7 @@ import android.widget.Spinner;
 import ar.com.playfree.adapters.SpinAdapter;
 import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Foto;
+import ar.com.playfree.services.DataServices;
 import ar.com.playfree.services.DataServicesDummy;
 
 import com.squareup.picasso.Picasso;
@@ -52,54 +49,62 @@ public class VerFotosActivity extends Activity {
 		getActionBar().setDisplayShowHomeEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-				"album");
-
 		try {
-			if (null == album) {
-				fotos = cargarFotos(this);
-			} else {
-				fotos = album;
-			}
-			cargarCategorias();
+			getPhoto();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		gridview = (GridView) findViewById(R.id.gridview);
-		imageAdapter = new ImageAdapter(this, fotos);		
-		gridview.setAdapter(imageAdapter);
-		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				Intent i = new Intent(VerFotosActivity.this,
-						FotoGrandeActivity.class);
-				i.putExtra("position", position);
-				i.putExtra("foto", (Foto) fotos.get(position));
-				startActivity(i);
-			}
-		});
+//		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+//				"album");
+//
+//		try {
+//			if (null == album) {
+//				fotos = cargarFotos(this);
+//			} else {
+//				fotos = album;
+//			}
+//			cargarCategorias();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		gridview = (GridView) findViewById(R.id.gridview);
+//		imageAdapter = new ImageAdapter(this, fotos);
+//		gridview.setAdapter(imageAdapter);
+//		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View v,
+//					int position, long id) {
+//				Intent i = new Intent(VerFotosActivity.this,
+//						FotoGrandeActivity.class);
+//				i.putExtra("position", position);
+//				i.putExtra("foto", (Foto) fotos.get(position));
+//				startActivity(i);
+//			}
+//		});
 	}
 
 	private void cargarCategorias() {
 		categorias = (Spinner) findViewById(R.id.categorias);
 		List<Categoria> list = dummy.getCategorias(null);
 		SpinAdapter adapter;
-		adapter = new SpinAdapter(VerFotosActivity.this, android.R.layout.simple_spinner_item, list);
+		adapter = new SpinAdapter(VerFotosActivity.this,
+				android.R.layout.simple_spinner_item, list);
 		categorias.setAdapter(adapter);
 		addListenerOnSpinnerItemSelection();
 	}
 
 	public void addListenerOnSpinnerItemSelection() {
 
-		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		categorias
+				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
 	private List<Foto> cargarFotos(Context context) throws Exception {
-
-		return dummy.getFotos(null);
+		return new DataServices().getFotos(context);
+		// return dummy.getFotos(null);
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -107,7 +112,7 @@ public class VerFotosActivity extends Activity {
 
 		public ImageAdapter(Context context, List<Foto> album) {
 			mContext = context;
-			if (null != album){
+			if (null != album) {
 				fotos = album;
 			}
 		}
@@ -140,20 +145,24 @@ public class VerFotosActivity extends Activity {
 			Picasso picasso = Picasso.with(mContext);
 			Foto foto = (Foto) fotos.get(position);
 			picasso.load(foto.getUrl()).placeholder(R.raw.place_holder)
-					.error(R.raw.big_problem)
-					.resize(150, 150)
-					.centerCrop()
+					.error(R.raw.big_problem).resize(150, 150).centerCrop()
 					.into(imageView);
 
-			if (foto.isLike()) {				
-				Bitmap water = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.facebooklike23);
+			if (foto.isLike()) {
+				Bitmap water = BitmapFactory.decodeResource(
+						mContext.getResources(), R.drawable.facebooklike23);
 				imageView.setDrawingCacheEnabled(true);
-				imageView.measure(MeasureSpec.makeMeasureSpec(0,MeasureSpec.UNSPECIFIED), MeasureSpec
+				imageView
+						.measure(MeasureSpec.makeMeasureSpec(0,
+								MeasureSpec.UNSPECIFIED), MeasureSpec
 								.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-				imageView.layout(0, 0, imageView.getMeasuredWidth(), imageView.getMeasuredHeight());
+				imageView.layout(0, 0, imageView.getMeasuredWidth(),
+						imageView.getMeasuredHeight());
 				imageView.buildDrawingCache(true);
-				Bitmap principal = Bitmap.createBitmap(imageView.getDrawingCache());
-				Bitmap bmOverlay = Bitmap.createBitmap(150, 150, principal.getConfig());
+				Bitmap principal = Bitmap.createBitmap(imageView
+						.getDrawingCache());
+				Bitmap bmOverlay = Bitmap.createBitmap(150, 150,
+						principal.getConfig());
 				imageView.setDrawingCacheEnabled(false);
 				Canvas canvas = new Canvas(bmOverlay);
 				canvas.drawBitmap(principal, 0, 0, null);
@@ -176,7 +185,7 @@ public class VerFotosActivity extends Activity {
 		}
 		if (id == R.id.action_settings) {
 			return true;
-		} 
+		}
 		return (super.onOptionsItemSelected(menuItem));
 	}
 
@@ -197,11 +206,11 @@ public class VerFotosActivity extends Activity {
 			DataServicesDummy dummy = new DataServicesDummy();
 			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
 			android.os.SystemClock.sleep(1000);
-			if (album.size() == 0){
-				
-			}			
+			if (album.size() == 0) {
+
+			}
 			imageAdapter = new ImageAdapter(getApplicationContext(), album);
-			gridview.setAdapter(imageAdapter); 	
+			gridview.setAdapter(imageAdapter);
 		}
 
 		@Override
@@ -211,43 +220,88 @@ public class VerFotosActivity extends Activity {
 		}
 
 	}
-	
-//	@Override
-//	public void onRestart() { 
-//	    super.onRestart();	   
-//		setContentView(R.layout.activity_ver_fotos);
-//		getActionBar().setDisplayShowHomeEnabled(true);
-//		getActionBar().setHomeButtonEnabled(true);
-//		getActionBar().setDisplayHomeAsUpEnabled(true);
-//		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-//				"album");
-//
-//		try {
-//			if (null == album) {
-//				fotos = cargarFotos(this);
-//			} else {
-//				fotos = album;
-//			}
-//			cargarCategorias();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		gridview = (GridView) findViewById(R.id.gridview);
-//		imageAdapter = new ImageAdapter(this, album);
-//		gridview.setAdapter(imageAdapter);
-//		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View v,
-//					int position, long id) {
-//				Intent i = new Intent(VerFotosActivity.this,
-//						FotoGrandeActivity.class);
-//				i.putExtra("position", position);
-//				i.putExtra("foto", (Foto) fotos.get(position));
-//				startActivity(i);
-//			}
-//		});
-//	}
-	
+
+	// @Override
+	// public void onRestart() {
+	// super.onRestart();
+	// setContentView(R.layout.activity_ver_fotos);
+	// getActionBar().setDisplayShowHomeEnabled(true);
+	// getActionBar().setHomeButtonEnabled(true);
+	// getActionBar().setDisplayHomeAsUpEnabled(true);
+	// final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+	// "album");
+	//
+	// try {
+	// if (null == album) {
+	// fotos = cargarFotos(this);
+	// } else {
+	// fotos = album;
+	// }
+	// cargarCategorias();
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// gridview = (GridView) findViewById(R.id.gridview);
+	// imageAdapter = new ImageAdapter(this, album);
+	// gridview.setAdapter(imageAdapter);
+	// gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	// @Override
+	// public void onItemClick(AdapterView<?> parent, View v,
+	// int position, long id) {
+	// Intent i = new Intent(VerFotosActivity.this,
+	// FotoGrandeActivity.class);
+	// i.putExtra("position", position);
+	// i.putExtra("foto", (Foto) fotos.get(position));
+	// startActivity(i);
+	// }
+	// });
+	// }
+
+	private void getPhoto() throws Exception {
+		new PhotoTask().execute();
+	}
+
+	private class PhotoTask extends AsyncTask<Void, Void, Void> {
+
+		private List<Foto> photos;
+		
+		protected Void doInBackground(Void... files) {
+			setProgress(0);
+
+				photos = new DataServices().getFotos(getApplicationContext());
+
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
+					"album");
+
+
+			gridview = (GridView) findViewById(R.id.gridview);
+			imageAdapter = new ImageAdapter(VerFotosActivity.this, photos);
+			gridview.setAdapter(imageAdapter);
+			gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View v,
+						int position, long id) {
+					Intent i = new Intent(VerFotosActivity.this,
+							FotoGrandeActivity.class);
+					i.putExtra("position", position);
+					i.putExtra("foto", (Foto) photos.get(position));
+					startActivity(i);
+				}
+			});
+		}
+	}
+
 }
