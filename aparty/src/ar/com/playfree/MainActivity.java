@@ -2,6 +2,7 @@ package ar.com.playfree;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
@@ -29,11 +30,13 @@ import android.text.style.TypefaceSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import ar.com.playfree.services.DataServices;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
 	private static final int TAKE_PHOTO_CODE = 0;
+	private File fileSelect;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -87,7 +90,7 @@ public class MainActivity extends Activity {
 				Intent cameraIntent = new Intent(
 						MediaStore.ACTION_IMAGE_CAPTURE);
 				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-				cameraIntent.putExtra("file", newfile);
+				fileSelect = newfile;
 
 				startActivityForResult(cameraIntent, TAKE_PHOTO_CODE);
 			}
@@ -122,13 +125,12 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+		// super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == RESULT_OK) {
 			if (requestCode == TAKE_PHOTO_CODE) {
-				File file = (File) data.getExtras().get("file");
 				try {
-					sendPhoto(file);
+					sendPhoto(fileSelect);
 				} catch (Exception e) {
 				}
 			}
@@ -149,32 +151,12 @@ public class MainActivity extends Activity {
 				return null;
 			setProgress(0);
 
-			DefaultHttpClient httpclient = new DefaultHttpClient();
 			try {
-
-				WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-				WifiInfo info = manager.getConnectionInfo();
-				String address = info.getMacAddress();
-
-				HttpPost httppost = new HttpPost(
-						"http://172.16.19.52:8080/playfree/foto/adm.action?mac="
-								+ address); // server
-
-				InputStreamEntity reqEntity = new InputStreamEntity(
-						new FileInputStream(files[0]), -1);
-				reqEntity.setContentType("binary/octet-stream");
-				reqEntity.setChunked(true); // Send in multiple parts if needed
-				httppost.setEntity(reqEntity);
-				HttpResponse response = httpclient.execute(httppost);
-
-			} catch (ClientProtocolException e) {
+				new DataServices().pushFoto(1L, new FileInputStream(files[0]),
+						getApplicationContext());
+			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-
 			}
 
 			return null;
