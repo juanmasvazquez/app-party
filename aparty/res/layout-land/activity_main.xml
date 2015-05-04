@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#95a5a6"
+    android:orientation="horizontal" >
+
+
+        <Button
+            android:id="@+id/btnUnirEvento"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/pressed_calendar" />
+
+        <TextView
+            android:id="@+id/textViewUnirse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnUnirEvento"
+            android:layout_centerHorizontal="true"
+            android:text="@string/button_unirse"
+            android:textSize="15sp"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnVerAlbum"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignBaseline="@+id/btnUnirEvento"
+            android:layout_alignBottom="@+id/btnUnirEvento"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@+id/textViewUnirse"
+            android:background="@drawable/pressed_album" />
+
+        <Button
+            android:id="@+id/btnCapture"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_above="@+id/textViewCapturar"
+            android:layout_marginRight="16dp"
+            android:layout_toLeftOf="@+id/textViewUnirse"
+            android:background="@drawable/pressed_camera" />
+
+        <TextView
+            android:id="@+id/textViewCapturar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textViewUnirse"
+            android:layout_alignBottom="@+id/textViewUnirse"
+            android:layout_alignRight="@+id/btnCapture"
+            android:layout_marginRight="18dp"
+            android:text="@string/button_capturar"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/textViewAlbum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textViewUnirse"
+            android:layout_alignBottom="@+id/textViewUnirse"
+            android:layout_alignRight="@+id/btnVerAlbum"
+            android:layout_marginRight="14dp"
+            android:text="@string/button_album"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+</RelativeLayout>

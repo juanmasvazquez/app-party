@@ -15,15 +15,6 @@
             android:background="@drawable/pressed_calendar" />
 
         <Button
-            android:id="@+id/btnCapture"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignLeft="@+id/btnUnirEvento"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/pressed_camera" />
-
-        <Button
             android:id="@+id/btnVerAlbum"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -56,10 +47,18 @@
             android:id="@+id/textViewAlbum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/btnVerAlbum"
             android:layout_centerHorizontal="true"
             android:text="@string/button_album"
             android:textColor="@android:color/white"
             android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnCapture"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_above="@+id/textViewCapturar"
+            android:layout_alignLeft="@+id/btnUnirEvento"
+            android:background="@drawable/pressed_camera" />
 
 </RelativeLayout>
