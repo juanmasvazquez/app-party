@@ -15,28 +15,30 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_app_icon"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.Light" >
         <activity
             android:name=".MainActivity"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:icon="@drawable/ic_app_icon" >
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
             android:name=".VerFotosActivity"
-            android:icon="@drawable/ic_album"
-            android:label="@string/title_activity_ver_fotos" >
+            android:label="@string/title_activity_ver_fotos" 
+            android:icon="@drawable/ic_app_icon">
         </activity>
         <activity
             android:name=".FotoGrandeActivity"
-            android:icon="@drawable/ic_album"
-            android:label="@string/title_activity_test" >
+            android:label="@string/title_activity_test"
+             android:icon="@drawable/ic_app_icon" >
         </activity>
         <activity
             android:name=".CameraActivity"
@@ -46,12 +48,17 @@
             android:name=".UnirEventoActivity"
             android:label="@string/title_activity_unir_evento" >
         </activity>
-        <activity
-            android:name="jim.h.common.android.zxinglib.CaptureActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+        
+        
+        
+        <activity android:name="jim.h.common.android.zxinglib.CaptureActivity"
+			android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+			android:windowSoftInputMode="stateAlwaysHidden" />
+        
+        
+        
+        
     </application>
 
 </manifest>
