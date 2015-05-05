@@ -35,7 +35,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import ar.com.playfree.entities.Foto;
-import ar.com.playfree.services.DataServicesDummy;
+import ar.com.playfree.services.DataServices;
 import ar.com.playfree.views.TouchImageView;
 
 import com.squareup.picasso.Picasso;
@@ -86,7 +86,7 @@ public class FotoGrandeActivity extends Activity {
 		subidaPor.setText(foto.getUsuario());
 		botonLike = (Button) findViewById(R.id.botonlike);
 		chequearLikes(foto);		
-		final DataServicesDummy dummy = new DataServicesDummy();
+		final DataServices services = new DataServices();
 
 		botonLike.setOnClickListener(new OnClickListener() {
 		Foto fotoConMeGusta = null;
@@ -94,11 +94,11 @@ public class FotoGrandeActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				if (foto.isLike()) {
-					fotoConMeGusta = dummy.sendLikeFoto(foto.getId(),
+					fotoConMeGusta = services.sendLikeFoto(foto.getId(),
 							getApplicationContext());
 				} else {
-					fotoConMeGusta = dummy.sendNoLikeFoto(foto.getId(),
-							getApplicationContext());
+//					fotoConMeGusta = services.sendNoLikeFoto(foto.getId(),
+//							getApplicationContext());
 				}				
 				chequearLikes(foto);		
 				cantLikes.setText(String.valueOf(fotoConMeGusta.getCantLikes()));
