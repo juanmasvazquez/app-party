@@ -12,7 +12,7 @@
     <string name="likes">Likes:</string>
     <string name="subidaPor">Subida por:</string>
     <string name="categorias">Categorias:</string>
-    <string name="title_activity_unir_evento">UnirEventoActivity</string>
+    <string name="title_activity_unir_evento">Unirse al evento</string>
     <string name="dialog_unirse">Unirse</string>
     <string name="dialog_cancelar">Cancelar</string>
     <string name="button_capturar">Capturar</string>
