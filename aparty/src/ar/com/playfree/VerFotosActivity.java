@@ -55,35 +55,6 @@ public class VerFotosActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-//				"album");
-//
-//		try {
-//			if (null == album) {
-//				fotos = cargarFotos(this);
-//			} else {
-//				fotos = album;
-//			}
-//			cargarCategorias();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		gridview = (GridView) findViewById(R.id.gridview);
-//		imageAdapter = new ImageAdapter(this, fotos);
-//		gridview.setAdapter(imageAdapter);
-//		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View v,
-//					int position, long id) {
-//				Intent i = new Intent(VerFotosActivity.this,
-//						FotoGrandeActivity.class);
-//				i.putExtra("position", position);
-//				i.putExtra("foto", (Foto) fotos.get(position));
-//				startActivity(i);
-//			}
-//		});
 	}
 
 	private void cargarCategorias() {
@@ -98,13 +69,11 @@ public class VerFotosActivity extends Activity {
 
 	public void addListenerOnSpinnerItemSelection() {
 
-		categorias
-				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
 	private List<Foto> cargarFotos(Context context) throws Exception {
 		return new DataServices().getFotos(context);
-		// return dummy.getFotos(null);
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -144,7 +113,7 @@ public class VerFotosActivity extends Activity {
 
 			Picasso picasso = Picasso.with(mContext);
 			Foto foto = (Foto) fotos.get(position);
-			picasso.load(foto.getUrl()).placeholder(R.raw.place_holder)
+			picasso.load(foto.getUrlThumb()).placeholder(R.raw.place_holder)
 					.error(R.raw.big_problem).resize(150, 150).centerCrop()
 					.into(imageView);
 
@@ -193,6 +162,7 @@ public class VerFotosActivity extends Activity {
 		Intent intent = new Intent(getApplicationContext(), cls);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 	private class CustomOnItemSelectedListener implements
@@ -221,44 +191,7 @@ public class VerFotosActivity extends Activity {
 
 	}
 
-	// @Override
-	// public void onRestart() {
-	// super.onRestart();
-	// setContentView(R.layout.activity_ver_fotos);
-	// getActionBar().setDisplayShowHomeEnabled(true);
-	// getActionBar().setHomeButtonEnabled(true);
-	// getActionBar().setDisplayHomeAsUpEnabled(true);
-	// final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-	// "album");
-	//
-	// try {
-	// if (null == album) {
-	// fotos = cargarFotos(this);
-	// } else {
-	// fotos = album;
-	// }
-	// cargarCategorias();
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// gridview = (GridView) findViewById(R.id.gridview);
-	// imageAdapter = new ImageAdapter(this, album);
-	// gridview.setAdapter(imageAdapter);
-	// gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	// @Override
-	// public void onItemClick(AdapterView<?> parent, View v,
-	// int position, long id) {
-	// Intent i = new Intent(VerFotosActivity.this,
-	// FotoGrandeActivity.class);
-	// i.putExtra("position", position);
-	// i.putExtra("foto", (Foto) fotos.get(position));
-	// startActivity(i);
-	// }
-	// });
-	// }
-
+	
 	private void getPhoto() throws Exception {
 		new PhotoTask().execute();
 	}
@@ -283,9 +216,8 @@ public class VerFotosActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra(
-					"album");
-
+			
+			final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra("album");
 
 			gridview = (GridView) findViewById(R.id.gridview);
 			imageAdapter = new ImageAdapter(VerFotosActivity.this, photos);
@@ -299,9 +231,16 @@ public class VerFotosActivity extends Activity {
 					i.putExtra("position", position);
 					i.putExtra("foto", (Foto) photos.get(position));
 					startActivity(i);
+					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
 			});
 		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);  
 	}
 
 }

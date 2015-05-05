@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -103,6 +105,7 @@ public class MainActivity extends Activity {
 				Intent verFotosIntent = new Intent(MainActivity.this,
 						VerFotosActivity.class);
 				startActivity(verFotosIntent);
+				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 			}
 		});
 
@@ -173,5 +176,18 @@ public class MainActivity extends Activity {
 			// Toast.makeText(CameraActivity.this, R.string.uploaded,
 			// Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.titulo, menu);
+		return true;
 	}
 }

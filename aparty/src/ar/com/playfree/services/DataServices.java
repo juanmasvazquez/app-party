@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -52,6 +54,30 @@ public class DataServices {
 		String service = AppUtils.getPhotosService(mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
+			response = response.getJSONObject("response");
+			JSONArray data = response.getJSONArray("data");
+			boolean success = response.getBoolean("success");
+			String errorMsj = response.getString("errorMessage");
+
+			if (success) {
+				List<Foto> fotos = new ArrayList<Foto>();
+				 for (int i = 0; i < data.length(); i++)
+				 {
+					 Foto foto = new Foto();
+					 foto.setCantLikes(data.getJSONObject(i).getInt("cantLikes"));
+					 foto.setId(data.getJSONObject(i).getLong("id"));
+					 foto.setIdCategoria(data.getJSONObject(i).getLong("idCategoria"));
+					 foto.setLike(data.getJSONObject(i).getBoolean("like"));
+					 foto.setMac(data.getJSONObject(i).getString("mac"));
+					 foto.setUrl(data.getJSONObject(i).getString("url"));
+					 foto.setUrlThumb(data.getJSONObject(i).getString("urlThumb"));
+					 foto.setUsuario(data.getJSONObject(i).getString("usuario"));
+					 fotos.add(foto);
+				 }
+				return fotos;
+			} else {
+				throw new ServiceException(errorMsj);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -119,23 +145,30 @@ public class DataServices {
 		try {
 			DefaultHttpClient httpclient = new DefaultHttpClient(
 					new BasicHttpParams());
-			HttpPost httppost = new HttpPost(service);
-			httppost.setHeader("Content-type",
-					"application/json; charset=iso-8859-1");
 
+			HttpUriRequest request = null;
 			if (null != in) {
+				HttpPost httppost = new HttpPost(service);
+				httppost.setHeader("Content-type",
+						"application/json; charset=iso-8859-1");
 				InputStreamEntity reqEntity = new InputStreamEntity(in, -1);
 				reqEntity.setContentType("binary/octet-stream");
 				reqEntity.setChunked(true); // Send in multiple parts if needed
 				httppost.setEntity(reqEntity);
+				request = httppost;
+			} else {
+				HttpGet httpget = new HttpGet(service);
+				httpget.setHeader("Content-type",
+						"application/json; charset=iso-8859-1");
+				request = httpget;
 			}
 
-			HttpResponse httpResponse = httpclient.execute(httppost);
+			HttpResponse httpResponse = httpclient.execute(request);
 			HttpEntity entity = httpResponse.getEntity();
 
 			InputStream inputStream = entity.getContent();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					inputStream, "iso-8859-1"), 8);
+					inputStream), 8);
 			StringBuilder sb = new StringBuilder();
 
 			String line = null;

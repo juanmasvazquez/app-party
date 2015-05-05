@@ -9,6 +9,15 @@ public class Foto implements Serializable{
 	private String mac;
 	private String usuario;
 	private String url;
+	private String urlThumb;
+	public String getUrlThumb() {
+		return urlThumb;
+	}
+
+	public void setUrlThumb(String urlThumb) {
+		this.urlThumb = urlThumb;
+	}
+
 	private int cantLikes;
 	private boolean like;
 
