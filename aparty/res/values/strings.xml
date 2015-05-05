@@ -20,5 +20,6 @@
     <string name="button_album">Ver album</string>
     <string name="meGusta">Me gusta</string>
     <string name="bajarFoto">Descargar Foto</string>
+    <string name="refrescar">Refrescar</string>
 
 </resources>
