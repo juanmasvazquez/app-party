@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -57,6 +59,21 @@ public class FotoGrandeActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
+		// Setear la fuente a utilizar en el mainActivity
+		String fontPath = "fonts/Roboto-Thin.ttf";
+
+		// Cambiar la fuente del actionbar
+		int actionBarTitle = Resources.getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+		TextView actionBarTitleView = (TextView) getWindow().findViewById(
+				actionBarTitle);
+		Typeface forte = Typeface.createFromAsset(getAssets(), fontPath);
+		if (actionBarTitleView != null) {
+			actionBarTitleView.setTypeface(forte);
+			actionBarTitleView.setTextSize(20);
+		}
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 		context = getApplicationContext();
@@ -65,7 +82,6 @@ public class FotoGrandeActivity extends Activity {
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		imageView = (TouchImageView) findViewById(R.id.imageView);
-		
 
 		final int position = getIntent().getIntExtra("position", -1);
 		final Foto foto = (Foto) getIntent().getSerializableExtra("foto");
@@ -85,11 +101,11 @@ public class FotoGrandeActivity extends Activity {
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(foto.getUsuario());
 		botonLike = (Button) findViewById(R.id.botonlike);
-		chequearLikes(foto);		
+		chequearLikes(foto);
 		final DataServices services = new DataServices();
 
 		botonLike.setOnClickListener(new OnClickListener() {
-		Foto fotoConMeGusta = null;
+			Foto fotoConMeGusta = null;
 
 			@Override
 			public void onClick(View arg0) {
@@ -97,12 +113,12 @@ public class FotoGrandeActivity extends Activity {
 					fotoConMeGusta = services.sendLikeFoto(foto.getId(),
 							getApplicationContext());
 				} else {
-//					fotoConMeGusta = services.sendNoLikeFoto(foto.getId(),
-//							getApplicationContext());
-				}				
-				chequearLikes(foto);		
+					// fotoConMeGusta = services.sendNoLikeFoto(foto.getId(),
+					// getApplicationContext());
+				}
+				chequearLikes(foto);
 				cantLikes.setText(String.valueOf(fotoConMeGusta.getCantLikes()));
-				
+
 			}
 		});
 
@@ -116,7 +132,7 @@ public class FotoGrandeActivity extends Activity {
 			botonLike.setText("Me gusta");
 			foto.setLike(true);
 		}
-		
+
 	}
 
 	@Override
@@ -127,7 +143,8 @@ public class FotoGrandeActivity extends Activity {
 			startActivityAfterCleanup(VerFotosActivity.class);
 			return true;
 		case R.id.bajarFoto:
-			Toast.makeText(getApplicationContext(), "Descargando Imagen...", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Descargando Imagen...",
+					Toast.LENGTH_LONG).show();
 			if (isDownloadManagerAvailable(getApplicationContext())) {
 				String url = fotoElegida.getUrl();
 				DownloadManager.Request request = new DownloadManager.Request(
@@ -148,8 +165,8 @@ public class FotoGrandeActivity extends Activity {
 			} else {
 				doDownload(fotoElegida.getUrl(),
 						appName + '-' + fotoElegida.getId() + ".jpg");
-			//downloadFile();
-			 }
+				// downloadFile();
+			}
 		}
 		return true;
 	}
@@ -214,7 +231,7 @@ public class FotoGrandeActivity extends Activity {
 		Intent intent = new Intent(getApplicationContext(), cls);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
-		 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right); 
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 	@Override
@@ -248,7 +265,6 @@ public class FotoGrandeActivity extends Activity {
 		}
 	}
 
-	
 	public void downloadFile() {
 		storeDir = createStoreDir();
 		if (storeDir != null) {
@@ -299,7 +315,7 @@ public class FotoGrandeActivity extends Activity {
 			int count;
 			try {
 
-				url = new URL(params[0]);  
+				url = new URL(params[0]);
 				String outpath = "";
 				try {
 
@@ -359,10 +375,10 @@ public class FotoGrandeActivity extends Activity {
 		}
 
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);  
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 }

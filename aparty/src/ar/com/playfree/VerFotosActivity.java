@@ -7,9 +7,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import ar.com.playfree.adapters.SpinAdapter;
 import ar.com.playfree.entities.Categoria;
@@ -45,6 +48,20 @@ public class VerFotosActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// Setear la fuente a utilizar en el mainActivity
+		String fontPath = "fonts/Roboto-Thin.ttf";
+
+		// Cambiar la fuente del actionbar
+		int actionBarTitle = Resources.getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+		TextView actionBarTitleView = (TextView) getWindow().findViewById(
+				actionBarTitle);
+		Typeface forte = Typeface.createFromAsset(getAssets(), fontPath);
+		if (actionBarTitleView != null) {
+			actionBarTitleView.setTypeface(forte);
+			actionBarTitleView.setTextSize(20);
+		}
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_ver_fotos);
 		getActionBar().setDisplayShowHomeEnabled(true);
@@ -70,7 +87,8 @@ public class VerFotosActivity extends Activity {
 
 	public void addListenerOnSpinnerItemSelection() {
 
-		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		categorias
+				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -140,7 +158,6 @@ public class VerFotosActivity extends Activity {
 		}
 	}
 
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		int id = menuItem.getItemId();
@@ -153,13 +170,14 @@ public class VerFotosActivity extends Activity {
 		if (id == R.id.action_settings) {
 			return true;
 		}
-		if (id == R.id.refrescar){
-			Toast.makeText(getBaseContext(), "Refrescando fotos...", Toast.LENGTH_SHORT).show();
+		if (id == R.id.refrescar) {
+			Toast.makeText(getBaseContext(), "Refrescando fotos...",
+					Toast.LENGTH_SHORT).show();
 			try {
 				getPhoto();
 			} catch (Exception e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 		return (super.onOptionsItemSelected(menuItem));
 	}
@@ -197,7 +215,6 @@ public class VerFotosActivity extends Activity {
 
 	}
 
-	
 	private void getPhoto() throws Exception {
 		new PhotoTask().execute();
 	}
@@ -205,11 +222,11 @@ public class VerFotosActivity extends Activity {
 	private class PhotoTask extends AsyncTask<Void, Void, Void> {
 
 		private List<Foto> photos;
-		
+
 		protected Void doInBackground(Void... files) {
 			setProgress(0);
 
-				photos = new DataServices().getFotos(getApplicationContext());
+			photos = new DataServices().getFotos(getApplicationContext());
 
 			return null;
 		}
@@ -222,7 +239,7 @@ public class VerFotosActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			
+
 			gridview = (GridView) findViewById(R.id.gridview);
 			imageAdapter = new ImageAdapter(VerFotosActivity.this, photos);
 			gridview.setAdapter(imageAdapter);
@@ -235,24 +252,24 @@ public class VerFotosActivity extends Activity {
 					i.putExtra("position", position);
 					i.putExtra("foto", (Foto) photos.get(position));
 					startActivity(i);
-					overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+					overridePendingTransition(R.anim.slide_in_right,
+							R.anim.slide_out_left);
 				}
 			});
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-	    super.onBackPressed();
-	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);  
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
-	
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.items, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.items, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
 
 }
