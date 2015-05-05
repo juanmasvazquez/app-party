@@ -1,6 +1,5 @@
 package ar.com.playfree;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,8 @@ import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -24,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 import ar.com.playfree.adapters.SpinAdapter;
 import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Foto;
@@ -41,7 +43,6 @@ public class VerFotosActivity extends Activity {
 	ImageAdapter imageAdapter;
 	GridView gridview;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -70,10 +71,6 @@ public class VerFotosActivity extends Activity {
 	public void addListenerOnSpinnerItemSelection() {
 
 		categorias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
-	}
-
-	private List<Foto> cargarFotos(Context context) throws Exception {
-		return new DataServices().getFotos(context);
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -143,17 +140,26 @@ public class VerFotosActivity extends Activity {
 		}
 	}
 
-	// boton BACK
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		int id = menuItem.getItemId();
 		switch (menuItem.getItemId()) {
+		// boton BACK
 		case android.R.id.home:
 			startActivityAfterCleanup(MainActivity.class);
 			return true;
 		}
 		if (id == R.id.action_settings) {
 			return true;
+		}
+		if (id == R.id.refrescar){
+			Toast.makeText(getBaseContext(), "Refrescando fotos...", Toast.LENGTH_SHORT).show();
+			try {
+				getPhoto();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}			
 		}
 		return (super.onOptionsItemSelected(menuItem));
 	}
@@ -217,8 +223,6 @@ public class VerFotosActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			
-			final List<Foto> album = (List<Foto>) getIntent().getSerializableExtra("album");
-
 			gridview = (GridView) findViewById(R.id.gridview);
 			imageAdapter = new ImageAdapter(VerFotosActivity.this, photos);
 			gridview.setAdapter(imageAdapter);
@@ -242,5 +246,13 @@ public class VerFotosActivity extends Activity {
 	    super.onBackPressed();
 	    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);  
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.items, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
 }
