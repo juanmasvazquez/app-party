@@ -5,20 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,18 +20,28 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+import ar.com.playfree.entities.Evento;
+import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
 
 public class MainActivity extends Activity {
 
+	public static final String PREFS_NAME = "Party-App-Prefs";
 	private static final int TAKE_PHOTO_CODE = 0;
 	private File fileSelect;
+	private Evento evento;
+
+	public static MainActivity instance;
+
+	// Campos
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
 		// Setear la fuente a utilizar en el mainActivity
 		String fontPath = "fonts/Roboto-Thin.ttf";
@@ -54,11 +57,6 @@ public class MainActivity extends Activity {
 			actionBarTitleView.setTypeface(forte);
 			actionBarTitleView.setTextSize(20);
 		}
-		// Cambiar titulo del actionbar
-		// getActionBar().setTitle("SAMPLE");
-
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 
 		// Set textview font
 		TextView textCapturar = (TextView) findViewById(R.id.textViewCapturar);
@@ -105,7 +103,8 @@ public class MainActivity extends Activity {
 				Intent verFotosIntent = new Intent(MainActivity.this,
 						VerFotosActivity.class);
 				startActivity(verFotosIntent);
-				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				overridePendingTransition(R.anim.slide_in_right,
+						R.anim.slide_out_left);
 			}
 		});
 
@@ -122,6 +121,20 @@ public class MainActivity extends Activity {
 				startActivity(unirEventoIntent);
 			}
 		});
+
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+				Context.MODE_PRIVATE);
+		String codigo = settings.getString("EVENTO_CODIGO", "");
+		if (!codigo.isEmpty()) {
+			try {
+				getEvento(codigo);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		instance = this;
 	}
 
 	@Override
@@ -177,12 +190,54 @@ public class MainActivity extends Activity {
 			// Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
+	// Logica para Validar Evento
+	// -------------------------------------------------------------------------
+
+	private void getEvento(String codigo) throws Exception {
+		new EventoTask().execute(codigo);
+	}
+
+	private class EventoTask extends AsyncTask<String, Void, Void> {
+
+		protected Void doInBackground(String... codigo) {
+			if (codigo[0] == null)
+				return null;
+			setProgress(0);
+			try {
+				evento = new DataServices().connectTo(codigo[0]);
+				if (null != evento) {
+					setEvento(evento);
+				} else {
+					// TODO: ALERTA DE QUE NO EXISTE EL EVENTO
+				}
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			// Toast.makeText(CameraActivity.this, R.string.uploaded,
+			// Toast.LENGTH_LONG).show();
+		}
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -190,4 +245,43 @@ public class MainActivity extends Activity {
 		//inflater.inflate(R.menu.titulo, menu);
 		return true;
 	}
+
+	public void setEvento(final Evento evento) {
+		this.evento = evento;
+
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("EVENTO_CODIGO", evento.getCodigo());
+		editor.commit();
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+
+				TextView textAlbum = (TextView) findViewById(R.id.textViewAlbum);
+				textAlbum.setVisibility(TextView.VISIBLE);
+				// Boton Ver Album --------------------
+				Button btnVerAlbum = (Button) findViewById(R.id.btnVerAlbum);
+				btnVerAlbum.setVisibility(Button.VISIBLE);
+
+				TextView textCapturar = (TextView) findViewById(R.id.textViewCapturar);
+				textCapturar.setVisibility(TextView.VISIBLE);
+				// Boton Capturar Foto --------------------
+				Button btnCaptura = (Button) findViewById(R.id.btnCapture);
+				btnCaptura.setVisibility(Button.VISIBLE);
+
+				TextView textUnirse = (TextView) findViewById(R.id.textViewUnirse);
+				textUnirse.setVisibility(TextView.INVISIBLE);
+				// Boton unir Evento --------------------
+				Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
+				btnUnirEvento.setVisibility(Button.INVISIBLE);
+
+				TextView textEvento = (TextView) findViewById(R.id.tituloEvento);
+				textEvento.setText(evento.getNombre());
+			}
+		});
+
+	}
+
 }

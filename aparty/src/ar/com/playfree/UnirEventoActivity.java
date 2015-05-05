@@ -127,7 +127,10 @@ public class UnirEventoActivity extends Activity {
 								.setOnClickListener(new OnClickListener() {
 									@Override
 									public void onClick(View v) {
+										MainActivity mainActivity = MainActivity.instance;
+										mainActivity.setEvento(result);
 										dialog.dismiss();
+										finish();
 									}
 								});
 						dialogButtonCancel
