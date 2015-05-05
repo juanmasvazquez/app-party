@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.titulo, menu);
+		//inflater.inflate(R.menu.titulo, menu);
 		return true;
 	}
 }
