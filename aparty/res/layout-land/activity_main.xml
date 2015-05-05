@@ -12,7 +12,7 @@
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/pressed_calendar" />
+            android:background="@drawable/pressed_calendar"  android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/textViewUnirse"
@@ -22,7 +22,7 @@
             android:layout_centerHorizontal="true"
             android:text="@string/button_unirse"
             android:textSize="15sp"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"  android:visibility="invisible"/>
 
         <Button
             android:id="@+id/btnVerAlbum"
@@ -32,7 +32,7 @@
             android:layout_alignBottom="@+id/btnUnirEvento"
             android:layout_marginLeft="16dp"
             android:layout_toRightOf="@+id/textViewUnirse"
-            android:background="@drawable/pressed_album" />
+            android:background="@drawable/pressed_album"  android:visibility="invisible"/>
 
         <Button
             android:id="@+id/btnCapture"
@@ -41,7 +41,7 @@
             android:layout_above="@+id/textViewCapturar"
             android:layout_marginRight="16dp"
             android:layout_toLeftOf="@+id/textViewUnirse"
-            android:background="@drawable/pressed_camera" />
+            android:background="@drawable/pressed_camera"  android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/textViewCapturar"
@@ -53,7 +53,7 @@
             android:layout_marginRight="18dp"
             android:text="@string/button_capturar"
             android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            android:textSize="15sp"  android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/textViewAlbum"
@@ -65,6 +65,6 @@
             android:layout_marginRight="14dp"
             android:text="@string/button_album"
             android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            android:textSize="15sp"  android:visibility="invisible"/>
 
 </RelativeLayout>

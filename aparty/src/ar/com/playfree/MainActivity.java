@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -124,6 +125,9 @@ public class MainActivity extends Activity {
 
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
 				Context.MODE_PRIVATE);
+		// SharedPreferences.Editor editor = settings.edit();
+		// editor.clear();
+		// editor.commit();
 		String codigo = settings.getString("EVENTO_CODIGO", "");
 		if (!codigo.isEmpty()) {
 			try {
@@ -132,6 +136,9 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			textUnirse.setVisibility(TextView.VISIBLE);
+			btnUnirEvento.setVisibility(Button.VISIBLE);
 		}
 
 		instance = this;
@@ -200,10 +207,19 @@ public class MainActivity extends Activity {
 
 	private class EventoTask extends AsyncTask<String, Void, Void> {
 
+		ProgressDialog pdia = null;
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			pdia = new ProgressDialog(MainActivity.this);
+			pdia.setIcon(getResources().getDrawable( R.drawable.ic_unirse ));
+			pdia.show();
+		}
+
 		protected Void doInBackground(String... codigo) {
 			if (codigo[0] == null)
 				return null;
-			setProgress(0);
 			try {
 				evento = new DataServices().connectTo(codigo[0]);
 				if (null != evento) {
@@ -230,6 +246,8 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			// Toast.makeText(CameraActivity.this, R.string.uploaded,
 			// Toast.LENGTH_LONG).show();
+			// To dismiss the dialog
+			pdia.dismiss();
 		}
 	}
 
@@ -242,7 +260,7 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
-		//inflater.inflate(R.menu.titulo, menu);
+		// inflater.inflate(R.menu.titulo, menu);
 		return true;
 	}
 
