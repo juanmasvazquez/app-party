@@ -25,6 +25,7 @@ import android.widget.TextView;
 import ar.com.playfree.entities.Evento;
 import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
+import ar.com.playfree.utils.TransparentProgressDialog;
 
 public class MainActivity extends Activity {
 
@@ -207,13 +208,12 @@ public class MainActivity extends Activity {
 
 	private class EventoTask extends AsyncTask<String, Void, Void> {
 
-		ProgressDialog pdia = null;
+		private TransparentProgressDialog pdia;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			pdia = new ProgressDialog(MainActivity.this);
-			pdia.setIcon(getResources().getDrawable( R.drawable.ic_unirse ));
+			pdia = new TransparentProgressDialog(MainActivity.this, R.drawable.loading);
 			pdia.show();
 		}
 
@@ -222,12 +222,16 @@ public class MainActivity extends Activity {
 				return null;
 			try {
 				evento = new DataServices().connectTo(codigo[0]);
+				Thread.sleep(2000);
 				if (null != evento) {
 					setEvento(evento);
 				} else {
 					// TODO: ALERTA DE QUE NO EXISTE EL EVENTO
 				}
 			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
