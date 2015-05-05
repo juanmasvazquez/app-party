@@ -3,19 +3,17 @@ package ar.com.playfree;
 import jim.h.common.android.zxinglib.integrator.IntentIntegrator;
 import jim.h.common.android.zxinglib.integrator.IntentResult;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 import ar.com.playfree.entities.Evento;
 import ar.com.playfree.exceptions.ServiceException;
@@ -28,6 +26,10 @@ public class UnirEventoActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
+		ActionBar actionBar = getActionBar();
+		actionBar.hide();
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_unir_evento);
 
@@ -107,43 +109,41 @@ public class UnirEventoActivity extends Activity {
 					@Override
 					public void run() {
 
-						final Dialog dialog = new Dialog(context);
-						dialog.setContentView(R.layout.dialog_unir_evento);
-						dialog.setTitle("Evento identificado");
-						dialog.setCanceledOnTouchOutside(false);
-						// set the custom dialog components - text, image and
-						// button
-						TextView text = (TextView) dialog
-								.findViewById(R.id.text);
-						text.setText("¿Desea unirse al evento: "
+						AlertDialog alertDialog = new AlertDialog.Builder(
+								UnirEventoActivity.this).create();
+						alertDialog.setTitle("Evento encontrado");
+						alertDialog.setMessage("¿Desea unirse al evento: "
 								+ result.getNombre() + " ?");
+						alertDialog.setIcon(R.drawable.ic_unirse);
 
-						Button dialogButtonOk = (Button) dialog
-								.findViewById(R.id.dialogButtonOK);
-						Button dialogButtonCancel = (Button) dialog
-								.findViewById(R.id.dialogButtonCancel);
-						// if button is clicked, close the custom dialog
-						dialogButtonOk
-								.setOnClickListener(new OnClickListener() {
-									@Override
-									public void onClick(View v) {
+						alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+								"Aceptar",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
 										MainActivity mainActivity = MainActivity.instance;
 										mainActivity.setEvento(result);
 										dialog.dismiss();
 										finish();
 									}
 								});
-						dialogButtonCancel
-								.setOnClickListener(new OnClickListener() {
-									@Override
-									public void onClick(View v) {
+						alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+								"Cancelar",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
 										dialog.dismiss();
 										finish();
+										Intent unirEventoIntent = new Intent(
+												UnirEventoActivity.this,
+												VerFotosActivity.class);
+										startActivity(unirEventoIntent);
 
 									}
 								});
+						alertDialog.show();
 
-						dialog.show();
+						
 					}
 				});
 			}
