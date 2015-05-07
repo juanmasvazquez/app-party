@@ -10,11 +10,12 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import ar.com.playfree.R;
 
 public class TransparentProgressDialog extends Dialog {
 
-	private ImageView iv;
+	private ProgressBar iv;
 	
 	public TransparentProgressDialog(Context context, int resourceIdOfImage) {
 		super(context, R.style.TransparentProgressDialog);
@@ -27,8 +28,7 @@ public class TransparentProgressDialog extends Dialog {
 		LinearLayout layout = new LinearLayout(context);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		iv = new ImageView(context);
-		iv.setImageResource(resourceIdOfImage);
+		iv = new ProgressBar(context);
 		layout.addView(iv, params);
 		addContentView(layout, params);
 	}
@@ -36,11 +36,11 @@ public class TransparentProgressDialog extends Dialog {
 	@Override
 	public void show() {
 		super.show();
-		RotateAnimation anim = new RotateAnimation(0.0f, 360.0f , Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
-		anim.setInterpolator(new LinearInterpolator());
-		anim.setRepeatCount(Animation.INFINITE);
-		anim.setDuration(3000);
-		iv.setAnimation(anim);
-		iv.startAnimation(anim);
+//		RotateAnimation anim = new RotateAnimation(0.0f, 360.0f , Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
+//		anim.setInterpolator(new LinearInterpolator());
+//		anim.setRepeatCount(Animation.INFINITE);
+//		anim.setDuration(3000);
+//		iv.setAnimation(anim);
+//		iv.startAnimation(anim);
 	}
 }
