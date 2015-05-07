@@ -19,7 +19,9 @@
     <string name="button_unirse">Unirse al evento</string>
     <string name="button_album">Ver album</string>
     <string name="meGusta">Me gusta</string>
+    <string name="nomeGusta">Ya no me gusta</string>
     <string name="bajarFoto">Descargar Foto</string>
     <string name="refrescar">Refrescar</string>
+    <string name="botonLike">Me gusta</string>
 
 </resources>

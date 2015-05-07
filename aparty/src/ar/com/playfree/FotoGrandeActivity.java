@@ -45,17 +45,15 @@ import com.squareup.picasso.Picasso;
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class FotoGrandeActivity extends Activity {
 
-	ImageButton imageButton;
 	Button botonLike;
 	Button botonDownload;
-	String msg = "Te gusta esta foto!";
-	Foto fotoElegida = new Foto();
 	ProgressDialog progressDialog;
 	String appName = "";
 	TouchImageView imageView = null;
 	ProgressDialog pd;
 	Context context;
 	String storeDir;
+	Foto foto = new Foto();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +82,7 @@ public class FotoGrandeActivity extends Activity {
 		imageView = (TouchImageView) findViewById(R.id.imageView);
 
 		final int position = getIntent().getIntExtra("position", -1);
-		final Foto foto = (Foto) getIntent().getSerializableExtra("foto");
-		fotoElegida = foto;
+		foto = (Foto) getIntent().getSerializableExtra("foto");
 		if (position != -1) {
 			Picasso.with(FotoGrandeActivity.this).load(foto.getUrl())
 					.placeholder(R.raw.place_holder).resize(800, 800)
@@ -96,40 +93,59 @@ public class FotoGrandeActivity extends Activity {
 		}
 
 		final TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
-		cantLikes.setText(String.valueOf(foto.getCantLikes()));
+		if(foto.getCantLikes() != 0){
+			cantLikes.setText(String.valueOf(foto.getCantLikes()) + " Me gusta");
+		}		
 
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
-		subidaPor.setText(foto.getUsuario());
+		subidaPor.setText(limpiarUsuario(foto.getUsuario()));
+		
 		botonLike = (Button) findViewById(R.id.botonlike);
-		chequearLikes(foto);
-		final DataServices services = new DataServices();
-
+		toggleLikeBoton(foto);
 		botonLike.setOnClickListener(new OnClickListener() {
-			Foto fotoConMeGusta = null;
-
 			@Override
 			public void onClick(View arg0) {
 				if (foto.isLike()) {
-					fotoConMeGusta = services.sendLikeFoto(foto.getId(),
-							getApplicationContext());
+					new SendLike().execute(foto.getId());
 				} else {
-					// fotoConMeGusta = services.sendNoLikeFoto(foto.getId(),
-					// getApplicationContext());
+					//new SendLike().execute(foto.getId());
 				}
-				chequearLikes(foto);
-				cantLikes.setText(String.valueOf(fotoConMeGusta.getCantLikes()));
-
 			}
 		});
+	}
+
+	private class SendLike extends AsyncTask<Long, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Long... params) {
+
+			foto = new DataServices().sendLikeFoto(params[0],
+					getApplicationContext());
+			toggleLikeBoton(foto);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					final TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
+					if(foto.getCantLikes() != 0){
+						cantLikes.setText(String.valueOf(foto.getCantLikes()) + " Me gusta");
+					}
+				}
+			});
+			return null;
+		}
 
 	}
 
-	private void chequearLikes(Foto foto) {
+	private CharSequence limpiarUsuario(String usuario) {
+		return usuario.substring(0, usuario.indexOf("@"));
+	}
+
+	private void toggleLikeBoton(Foto foto) {
 		if (foto.isLike()) {
-			botonLike.setText("Ya no me gusta");
+			botonLike.setText(R.string.nomeGusta);
 			foto.setLike(false);
 		} else {
-			botonLike.setText("Me gusta");
+			botonLike.setText(R.string.meGusta);
 			foto.setLike(true);
 		}
 
@@ -146,26 +162,25 @@ public class FotoGrandeActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Descargando Imagen...",
 					Toast.LENGTH_LONG).show();
 			if (isDownloadManagerAvailable(getApplicationContext())) {
-				String url = fotoElegida.getUrl();
+				String url = foto.getUrl();
 				DownloadManager.Request request = new DownloadManager.Request(
 						Uri.parse(url));
 				request.setDescription(appName + '-'
-						+ String.valueOf(fotoElegida.getId()));
+						+ String.valueOf(foto.getId()));
 				request.setTitle(appName + '-'
-						+ String.valueOf(fotoElegida.getId()) + ".jpg");
+						+ String.valueOf(foto.getId()) + ".jpg");
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					request.allowScanningByMediaScanner();
 					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 				}
 				request.setDestinationInExternalPublicDir(
 						Environment.DIRECTORY_DOWNLOADS, appName + '-'
-								+ fotoElegida.getId() + ".jpg");
+								+ foto.getId() + ".jpg");
 				DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 				manager.enqueue(request);
 			} else {
-				doDownload(fotoElegida.getUrl(),
-						appName + '-' + fotoElegida.getId() + ".jpg");
-				// downloadFile();
+				doDownload(foto.getUrl(),
+						appName + '-' + foto.getId() + ".jpg");				
 			}
 		}
 		return true;
@@ -271,7 +286,7 @@ public class FotoGrandeActivity extends Activity {
 			try {
 
 				BackTask bt = new BackTask();
-				bt.execute(fotoElegida.getUrl());
+				bt.execute(foto.getUrl());
 
 			} catch (Exception e) {
 			}

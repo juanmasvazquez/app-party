@@ -85,10 +85,11 @@ public class DataServicesDummy {
 		List<Foto> fotosCategorias = new ArrayList<Foto>();
 		if (idCategoria.equals(0L)){
 			fotosCategorias = getFotos(null);
-		}
-		for (Foto foto : fotos) {
-			if (foto.getIdCategoria().equals(idCategoria)) {
-				fotosCategorias.add(foto);
+		} else {
+			for (Foto foto : fotos) {
+				if (foto.getIdCategoria().equals(idCategoria)) {
+					fotosCategorias.add(foto);
+				}
 			}
 		}
 		return fotosCategorias;

@@ -73,6 +73,13 @@ public class VerFotosActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		android.os.SystemClock.sleep(2000);
+		try {
+			getPhoto();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void cargarCategorias() {
@@ -199,7 +206,7 @@ public class VerFotosActivity extends Activity {
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
 			DataServicesDummy dummy = new DataServicesDummy();
 			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
-			android.os.SystemClock.sleep(1000);
+			//android.os.SystemClock.sleep(1000);
 			if (album.size() == 0) {
 
 			}

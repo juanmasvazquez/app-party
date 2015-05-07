@@ -129,6 +129,24 @@ public class DataServices {
 		String service = AppUtils.getLikeService(idFoto, mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
+			response = response.getJSONObject("response");
+			JSONObject data = response.getJSONObject("data");
+			boolean success = response.getBoolean("success");
+			String errorMsj = response.getString("errorMessage");
+			if (success) {			
+				 Foto foto = new Foto();
+				 foto.setCantLikes(data.getInt("cantLikes"));
+				 foto.setId(data.getLong("id"));
+				 foto.setIdCategoria(data.getLong("idCategoria"));
+				 foto.setLike(data.getBoolean("like"));
+				 foto.setMac(data.getString("mac"));
+				 foto.setUrl(data.getString("url"));
+				 foto.setUrlThumb(data.getString("urlThumb"));
+				 foto.setUsuario(data.getString("usuario"));
+				 return foto;
+			}else {
+				throw new ServiceException(errorMsj);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

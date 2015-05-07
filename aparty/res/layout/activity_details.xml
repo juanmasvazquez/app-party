@@ -9,20 +9,11 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/facebooklike2" />
-
     <TextView
         android:id="@+id/cantLikes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/imageView1"
+        android:layout_above="@+id/botonlike"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -37,16 +28,30 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView1"
+        android:layout_above="@+id/subidaPor"
         android:layout_alignParentRight="true"
         android:text="@string/subidaPor" />
 
+<!--     <Button -->
+<!--         android:id="@+id/botonlike" -->
+<!--         android:layout_width="wrap_content" -->
+<!--         android:layout_height="wrap_content" -->
+<!--          android:layout_alignParentBottom="true" -->
+<!--         android:layout_alignParentLeft="true" -->
+<!--         android:background="#00000000" -->
+<!--         style="@style/btnStyleSeagull" -->
+<!--  /> -->
+
     <Button
         android:id="@+id/botonlike"
-        android:layout_width="wrap_content"
+        style="@style/btnStyleSeagull"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView1"
-        android:text="@string/meGusta" />
-
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/botonLike"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold|italic" />
 
 </RelativeLayout>
