@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import ar.com.playfree.entities.Evento;
 import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
@@ -124,25 +124,33 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		TextView textConectar = (TextView) findViewById(R.id.textConectar);
+		textConectar.setTypeface(tf);
+		Button btnConectar = (Button) findViewById(R.id.btnConectar);
+		btnConectar.setTypeface(tf);
+		btnConectar.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				loadEvento();
+			}
+		});
+
+		loadEvento();
+
+		instance = this;
+	}
+
+	private void loadEvento() {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
 				Context.MODE_PRIVATE);
-		// SharedPreferences.Editor editor = settings.edit();
-		// editor.clear();
-		// editor.commit();
 		String codigo = settings.getString("EVENTO_CODIGO", "");
 		if (!codigo.isEmpty()) {
-			try {
-				getEvento(codigo);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			getEvento(codigo);
 		} else {
+			TextView textUnirse = (TextView) findViewById(R.id.textViewUnirse);
+			Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
 			textUnirse.setVisibility(TextView.VISIBLE);
 			btnUnirEvento.setVisibility(Button.VISIBLE);
 		}
-
-		instance = this;
 	}
 
 	@Override
@@ -168,90 +176,101 @@ public class MainActivity extends Activity {
 
 	private class CameraTask extends AsyncTask<File, Void, Void> {
 
-		protected Void doInBackground(File... files) {
-			if (files[0] == null)
-				return null;
-			setProgress(0);
+		private TransparentProgressDialog pdia;
+		private ServiceException sexc;
 
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			pdia = new TransparentProgressDialog(MainActivity.this,
+					R.drawable.loading);
+			pdia.show();
+		}
+
+		protected Void doInBackground(File... files) {
 			try {
 				new DataServices().pushFoto(1L, new FileInputStream(files[0]),
 						getApplicationContext());
+			} catch (ServiceException sexc) {
+				this.sexc = sexc;
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-
 			return null;
 		}
 
 		@Override
-		protected void onProgressUpdate(Void... values) {
-			// TODO Auto-generated method stub
-			super.onProgressUpdate(values);
-		}
-
-		@Override
 		protected void onPostExecute(Void result) {
-			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			// Toast.makeText(CameraActivity.this, R.string.uploaded,
-			// Toast.LENGTH_LONG).show();
+			pdia.dismiss();
+			if (null != this.sexc) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(MainActivity.this, sexc.getMessage(),
+								Toast.LENGTH_LONG).show();
+					}
+				});
+			}
 		}
 	}
 
 	// Logica para Validar Evento
 	// -------------------------------------------------------------------------
 
-	private void getEvento(String codigo) throws Exception {
+	private void getEvento(String codigo) {
 		new EventoTask().execute(codigo);
 	}
 
 	private class EventoTask extends AsyncTask<String, Void, Void> {
 
 		private TransparentProgressDialog pdia;
+		private ServiceException sexc;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			pdia = new TransparentProgressDialog(MainActivity.this, R.drawable.loading);
+			pdia = new TransparentProgressDialog(MainActivity.this,
+					R.drawable.loading);
 			pdia.show();
 		}
 
 		protected Void doInBackground(String... codigo) {
-			if (codigo[0] == null)
-				return null;
 			try {
 				evento = new DataServices().connectTo(codigo[0]);
-				Thread.sleep(2000);
 				if (null != evento) {
 					setEvento(evento);
 				} else {
-					// TODO: ALERTA DE QUE NO EXISTE EL EVENTO
+					finalizarSesion();
 				}
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (final ServiceException sexc) {
+				this.sexc = sexc;
 			}
 			return null;
 		}
 
 		@Override
 		protected void onProgressUpdate(Void... values) {
-			// TODO Auto-generated method stub
 			super.onProgressUpdate(values);
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
-			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			// Toast.makeText(CameraActivity.this, R.string.uploaded,
-			// Toast.LENGTH_LONG).show();
-			// To dismiss the dialog
 			pdia.dismiss();
+			if (null != this.sexc) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						TextView textConectar = (TextView) findViewById(R.id.textConectar);
+						textConectar.setVisibility(TextView.VISIBLE);
+						Button btnConectar = (Button) findViewById(R.id.btnConectar);
+						btnConectar.setVisibility(Button.VISIBLE);
+
+						Toast.makeText(MainActivity.this, sexc.getMessage(),
+								Toast.LENGTH_LONG).show();
+					}
+				});
+			}
 		}
 	}
 
@@ -299,11 +318,35 @@ public class MainActivity extends Activity {
 				Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
 				btnUnirEvento.setVisibility(Button.INVISIBLE);
 
+				TextView textConectar = (TextView) findViewById(R.id.textConectar);
+				textConectar.setVisibility(TextView.INVISIBLE);
+				Button btnConectar = (Button) findViewById(R.id.btnConectar);
+				btnConectar.setVisibility(Button.INVISIBLE);
+
 				TextView textEvento = (TextView) findViewById(R.id.tituloEvento);
 				textEvento.setText(evento.getNombre());
 			}
 		});
 
+	}
+
+	public void finalizarSesion() {
+		this.evento = null;
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.clear();
+		editor.commit();
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				TextView textUnirse = (TextView) findViewById(R.id.textViewUnirse);
+				textUnirse.setVisibility(TextView.VISIBLE);
+				Button btnUnirEvento = (Button) findViewById(R.id.btnUnirEvento);
+				btnUnirEvento.setVisibility(Button.VISIBLE);
+			}
+		});
 	}
 
 }

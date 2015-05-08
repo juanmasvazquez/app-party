@@ -32,6 +32,7 @@ import android.widget.Toast;
 import ar.com.playfree.adapters.SpinAdapter;
 import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Foto;
+import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
 import ar.com.playfree.services.DataServicesDummy;
 
@@ -61,7 +62,7 @@ public class VerFotosActivity extends Activity {
 			actionBarTitleView.setTypeface(forte);
 			actionBarTitleView.setTextSize(20);
 		}
-		
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_ver_fotos);
 		getActionBar().setDisplayShowHomeEnabled(true);
@@ -199,7 +200,7 @@ public class VerFotosActivity extends Activity {
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
 			DataServicesDummy dummy = new DataServicesDummy();
 			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
-			//android.os.SystemClock.sleep(1000);
+			// android.os.SystemClock.sleep(1000);
 			if (album.size() == 0) {
 
 			}
@@ -226,8 +227,17 @@ public class VerFotosActivity extends Activity {
 		protected Void doInBackground(Void... files) {
 			setProgress(0);
 
-			photos = new DataServices().getFotos(getApplicationContext());
-
+			try {
+				photos = new DataServices().getFotos(getApplicationContext());
+			} catch (final ServiceException sexc) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(VerFotosActivity.this,
+								sexc.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
+			}
 			return null;
 		}
 

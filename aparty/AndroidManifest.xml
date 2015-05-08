@@ -44,11 +44,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".CameraActivity"
-            android:label="Camera Cambiar"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".UnirEventoActivity"
             android:label="@string/title_activity_unir_evento"
             android:screenOrientation="portrait" >

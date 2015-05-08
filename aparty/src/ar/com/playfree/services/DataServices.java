@@ -15,6 +15,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -45,12 +46,12 @@ public class DataServices {
 				throw new ServiceException(errorMsj);
 			}
 
-		} catch (Exception e) {
-			throw new ServiceException("Error al conectar con servicios");
+		} catch (JSONException e) {
+			throw new ServiceException("Error interno");
 		}
 	}
 
-	public List<Foto> getFotos(Context mContext) {
+	public List<Foto> getFotos(Context mContext) throws ServiceException {
 		String service = AppUtils.getPhotosService(mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
@@ -61,30 +62,30 @@ public class DataServices {
 
 			if (success) {
 				List<Foto> fotos = new ArrayList<Foto>();
-				 for (int i = 0; i < data.length(); i++)
-				 {
-					 Foto foto = new Foto();
-					 foto.setCantLikes(data.getJSONObject(i).getInt("cantLikes"));
-					 foto.setId(data.getJSONObject(i).getLong("id"));
-					 foto.setIdCategoria(data.getJSONObject(i).getLong("idCategoria"));
-					 foto.setLike(data.getJSONObject(i).getBoolean("like"));
-					 foto.setMac(data.getJSONObject(i).getString("mac"));
-					 foto.setUrl(data.getJSONObject(i).getString("url"));
-					 foto.setUrlThumb(data.getJSONObject(i).getString("urlThumb"));
-					 foto.setUsuario(data.getJSONObject(i).getString("usuario"));
-					 fotos.add(foto);
-				 }
+				for (int i = 0; i < data.length(); i++) {
+					Foto foto = new Foto();
+					foto.setCantLikes(data.getJSONObject(i).getInt("cantLikes"));
+					foto.setId(data.getJSONObject(i).getLong("id"));
+					foto.setIdCategoria(data.getJSONObject(i).getLong(
+							"idCategoria"));
+					foto.setLike(data.getJSONObject(i).getBoolean("like"));
+					foto.setMac(data.getJSONObject(i).getString("mac"));
+					foto.setUrl(data.getJSONObject(i).getString("url"));
+					foto.setUrlThumb(data.getJSONObject(i)
+							.getString("urlThumb"));
+					foto.setUsuario(data.getJSONObject(i).getString("usuario"));
+					fotos.add(foto);
+				}
 				return fotos;
 			} else {
 				throw new ServiceException(errorMsj);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (JSONException e) {
+			throw new ServiceException("Error interno");
 		}
-		return null;
 	}
 
-	public Foto getFoto(Long idFoto, Context mContext) {
+	public Foto getFoto(Long idFoto, Context mContext) throws ServiceException {
 		String service = AppUtils.getPhotoService(idFoto, mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
@@ -94,7 +95,8 @@ public class DataServices {
 		return null;
 	}
 
-	public List<Categoria> getCategorias(Context mContext) {
+	public List<Categoria> getCategorias(Context mContext)
+			throws ServiceException {
 		String service = AppUtils.getCategoriaService(mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
@@ -104,7 +106,8 @@ public class DataServices {
 		return null;
 	}
 
-	public List<Foto> getFotosCategoria(Long idCategoria, Context mContext) {
+	public List<Foto> getFotosCategoria(Long idCategoria, Context mContext)
+			throws ServiceException {
 		String service = AppUtils.getPhotosCategoriaService(idCategoria,
 				mContext);
 		try {
@@ -115,17 +118,15 @@ public class DataServices {
 		return null;
 	}
 
-	public Foto pushFoto(Long idCategoria, InputStream foto, Context mContext) {
+	public Foto pushFoto(Long idCategoria, InputStream foto, Context mContext)
+			throws ServiceException {
 		String service = AppUtils.getPushService(idCategoria, mContext);
-		try {
-			JSONObject response = getJSONResponse(service, foto);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		getJSONResponse(service, foto);
 		return null;
 	}
 
-	public Foto sendLikeFoto(Long idFoto, Context mContext) {
+	public Foto sendLikeFoto(Long idFoto, Context mContext)
+			throws ServiceException {
 		String service = AppUtils.getLikeService(idFoto, mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
@@ -133,32 +134,36 @@ public class DataServices {
 			JSONObject data = response.getJSONObject("data");
 			boolean success = response.getBoolean("success");
 			String errorMsj = response.getString("errorMessage");
-			if (success) {			
-				 Foto foto = new Foto();
-				 foto.setCantLikes(data.getInt("cantLikes"));
-				 foto.setId(data.getLong("id"));
-				 foto.setIdCategoria(data.getLong("idCategoria"));
-				 foto.setLike(data.getBoolean("like"));
-				 foto.setMac(data.getString("mac"));
-				 foto.setUrl(data.getString("url"));
-				 foto.setUrlThumb(data.getString("urlThumb"));
-				 foto.setUsuario(data.getString("usuario"));
-				 return foto;
-			}else {
+			if (success) {
+				Foto foto = new Foto();
+				foto.setCantLikes(data.getInt("cantLikes"));
+				foto.setId(data.getLong("id"));
+				foto.setIdCategoria(data.getLong("idCategoria"));
+				foto.setLike(data.getBoolean("like"));
+				foto.setMac(data.getString("mac"));
+				foto.setUrl(data.getString("url"));
+				foto.setUrlThumb(data.getString("urlThumb"));
+				foto.setUsuario(data.getString("usuario"));
+				return foto;
+			} else {
 				throw new ServiceException(errorMsj);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (JSONException e) {
+			throw new ServiceException("Error interno");
 		}
-		return null;
 	}
 
-	private static JSONObject getJSONResponse(String service) throws Exception {
-		return getJSONResponse(service, null);
+	private static JSONObject getJSONResponse(String service)
+			throws ServiceException {
+		try {
+			return getJSONResponse(service, null);
+		} catch (Exception e) {
+			throw new ServiceException("No se pudo conectar con los Servicios");
+		}
 	}
 
 	private static JSONObject getJSONResponse(String service, InputStream in)
-			throws Exception {
+			 throws ServiceException {
 		JSONObject response = null;
 		try {
 			DefaultHttpClient httpclient = new DefaultHttpClient(
@@ -195,7 +200,7 @@ public class DataServices {
 			}
 			response = new JSONObject(sb.toString());
 		} catch (Exception e) {
-			throw new Exception(e.getMessage(), e);
+			throw new ServiceException("No se pudo conectar con los Servicios");
 		}
 		return response;
 	}

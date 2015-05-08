@@ -23,5 +23,6 @@
     <string name="bajarFoto">Descargar Foto</string>
     <string name="refrescar">Refrescar</string>
     <string name="botonLike">Me gusta</string>
+    <string name="conectar">Conectar</string>
 
 </resources>

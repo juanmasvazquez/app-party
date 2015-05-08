@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import ar.com.playfree.entities.Foto;
+import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
 import ar.com.playfree.views.TouchImageView;
 
@@ -95,9 +96,9 @@ public class FotoGrandeActivity extends Activity {
 
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(limpiarUsuario(foto.getUsuario()));
-		
+
 		cantLikes = (TextView) findViewById(R.id.cantLikes);
-		
+
 		botonLike = (Button) findViewById(R.id.botonlike);
 		toggleLikeBoton(foto);
 		botonLike.setOnClickListener(new OnClickListener() {
@@ -113,8 +114,18 @@ public class FotoGrandeActivity extends Activity {
 		@Override
 		protected Void doInBackground(Long... params) {
 
-			foto = new DataServices().sendLikeFoto(params[0],
-					getApplicationContext());
+			try {
+				foto = new DataServices().sendLikeFoto(params[0],
+						getApplicationContext());
+			} catch (final ServiceException sexc) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(FotoGrandeActivity.this,
+								sexc.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
+			}
 			toggleLikeBoton(foto);
 			return null;
 		}
@@ -127,25 +138,27 @@ public class FotoGrandeActivity extends Activity {
 
 	private void toggleLikeBoton(Foto foto) {
 		if (foto.isLike()) {
-			cambiarBotonLikeTexto(botonLike, R.string.nomeGusta );
+			cambiarBotonLikeTexto(botonLike, R.string.nomeGusta);
 			foto.setLike(false);
 		} else {
-			cambiarBotonLikeTexto(botonLike, R.string.meGusta );
+			cambiarBotonLikeTexto(botonLike, R.string.meGusta);
 			foto.setLike(true);
 		}
-		if(foto.getCantLikes() != 0){
-			cambiarCantLikesTexto(cantLikes, String.valueOf(foto.getCantLikes()) + " Me gusta" );
-		}	
+		if (foto.getCantLikes() != 0) {
+			cambiarCantLikesTexto(cantLikes,
+					String.valueOf(foto.getCantLikes()) + " Me gusta");
+		}
 
 	}
 
-	private void cambiarCantLikesTexto(final TextView cantLikes, final String texto) {
+	private void cambiarCantLikesTexto(final TextView cantLikes,
+			final String texto) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				cantLikes.setText(texto);
 			}
-		});		
+		});
 	}
 
 	private void cambiarBotonLikeTexto(Button boton, final int texto) {
@@ -154,7 +167,7 @@ public class FotoGrandeActivity extends Activity {
 			public void run() {
 				botonLike.setText(texto);
 			}
-		});		
+		});
 	}
 
 	@Override
@@ -173,20 +186,19 @@ public class FotoGrandeActivity extends Activity {
 						Uri.parse(url));
 				request.setDescription(appName + '-'
 						+ String.valueOf(foto.getId()));
-				request.setTitle(appName + '-'
-						+ String.valueOf(foto.getId()) + ".jpg");
+				request.setTitle(appName + '-' + String.valueOf(foto.getId())
+						+ ".jpg");
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					request.allowScanningByMediaScanner();
 					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 				}
 				request.setDestinationInExternalPublicDir(
-						Environment.DIRECTORY_DOWNLOADS, appName + '-'
-								+ foto.getId() + ".jpg");
+						Environment.DIRECTORY_DOWNLOADS,
+						appName + '-' + foto.getId() + ".jpg");
 				DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 				manager.enqueue(request);
 			} else {
-				doDownload(foto.getUrl(),
-						appName + '-' + foto.getId() + ".jpg");				
+				doDownload(foto.getUrl(), appName + '-' + foto.getId() + ".jpg");
 			}
 		}
 		return true;
