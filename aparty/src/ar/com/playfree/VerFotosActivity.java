@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +38,12 @@ import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
 import ar.com.playfree.services.DataServicesDummy;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.picasso.Picasso;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -44,8 +52,9 @@ public class VerFotosActivity extends Activity {
 	static List<Foto> fotos = new ArrayList<Foto>();
 	Spinner categorias = null;
 	DataServicesDummy dummy = new DataServicesDummy();
-	ImageAdapter imageAdapter;
+	ImageAdapter2 imageAdapter;
 	GridView gridview;
+	protected ImageLoader imageLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +73,8 @@ public class VerFotosActivity extends Activity {
 		}
 
 		super.onCreate(savedInstanceState);
+		imageLoader = ImageLoader.getInstance();
+		imageLoader.init(ImageLoaderConfiguration.createDefault(this));
 		setContentView(R.layout.activity_ver_fotos);
 		getActionBar().setDisplayShowHomeEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
@@ -74,6 +85,7 @@ public class VerFotosActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	private void cargarCategorias() {
@@ -204,7 +216,7 @@ public class VerFotosActivity extends Activity {
 			if (album.size() == 0) {
 
 			}
-			imageAdapter = new ImageAdapter(getApplicationContext(), album);
+			imageAdapter = new ImageAdapter2(getApplicationContext(), album);
 			gridview.setAdapter(imageAdapter);
 		}
 
@@ -251,7 +263,7 @@ public class VerFotosActivity extends Activity {
 		protected void onPostExecute(Void result) {
 
 			gridview = (GridView) findViewById(R.id.gridview);
-			imageAdapter = new ImageAdapter(VerFotosActivity.this, photos);
+			imageAdapter = new ImageAdapter2(VerFotosActivity.this, photos);
 			gridview.setAdapter(imageAdapter);
 			gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -280,6 +292,99 @@ public class VerFotosActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.items, menu);
 		return super.onCreateOptionsMenu(menu);
+	}
+	
+	private static class ImageAdapter2 extends BaseAdapter {
+
+		private LayoutInflater inflater;
+
+		private DisplayImageOptions options;
+		
+		private Context mContext ;
+
+		ImageAdapter2(Context context, List<Foto> album) {
+			fotos = album;
+			inflater = LayoutInflater.from(context);
+			mContext = context;
+			options = new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.raw.place_holder)
+					.showImageForEmptyUri(R.raw.place_holder)
+					.showImageOnFail(R.raw.big_problem)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.build();
+		}
+
+		@Override
+		public int getCount() {
+			return fotos.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			final ViewHolder holder;
+			View view = convertView;
+			if (view == null) {
+				view = inflater.inflate(R.layout.item_grid_image, parent, false);
+				holder = new ViewHolder();
+				assert view != null;
+				holder.imageView = (ImageView) view.findViewById(R.id.image);
+				holder.imageView2 = (ImageView) view.findViewById(R.id.image2);
+				holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
+				view.setTag(holder);
+			} else {
+				holder = (ViewHolder) view.getTag();
+			}
+			
+			Foto foto = (Foto) fotos.get(position);
+			if (foto.isLike()){
+				holder.imageView2.setVisibility(View.VISIBLE);
+				holder.imageView2.setImageResource(R.drawable.facebooklike23);
+			}			
+			ImageLoader.getInstance()
+					.displayImage(foto.getUrlThumb(), holder.imageView, options, new SimpleImageLoadingListener() {
+						@Override
+						public void onLoadingStarted(String imageUri, View view) {
+							holder.progressBar.setProgress(0);
+							holder.progressBar.setVisibility(View.VISIBLE);
+						}
+
+						@Override
+						public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+							holder.progressBar.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+							holder.progressBar.setVisibility(View.GONE);
+						}
+					}, new ImageLoadingProgressListener() {
+						@Override
+						public void onProgressUpdate(String imageUri, View view, int current, int total) {
+							holder.progressBar.setProgress(Math.round(100.0f * current / total));
+						}
+					});
+
+			return view;
+		}
+	}
+
+	static class ViewHolder {
+		ImageView imageView;
+		ImageView imageView2;
+		ProgressBar progressBar;
 	}
 
 }

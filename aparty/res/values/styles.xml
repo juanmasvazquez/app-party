@@ -60,5 +60,7 @@
        <item name="android:background">@drawable/custom_btn_seagull</item>
        <item name="android:padding">10dip</item>
    </style>
+   
+     <style name="ProgressBarStyle" parent="@android:style/Widget.ProgressBar.Horizontal"/>
 
 </resources>
