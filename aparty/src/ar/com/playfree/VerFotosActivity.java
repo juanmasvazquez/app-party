@@ -73,13 +73,6 @@ public class VerFotosActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		android.os.SystemClock.sleep(2000);
-		try {
-			getPhoto();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void cargarCategorias() {

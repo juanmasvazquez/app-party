@@ -54,6 +54,7 @@ public class FotoGrandeActivity extends Activity {
 	Context context;
 	String storeDir;
 	Foto foto = new Foto();
+	TextView cantLikes;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,8 @@ public class FotoGrandeActivity extends Activity {
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(limpiarUsuario(foto.getUsuario()));
 		
+		cantLikes = (TextView) findViewById(R.id.cantLikes);
+		
 		botonLike = (Button) findViewById(R.id.botonlike);
 		toggleLikeBoton(foto);
 		botonLike.setOnClickListener(new OnClickListener() {
@@ -130,7 +133,6 @@ public class FotoGrandeActivity extends Activity {
 			cambiarBotonLikeTexto(botonLike, R.string.meGusta );
 			foto.setLike(true);
 		}
-		TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
 		if(foto.getCantLikes() != 0){
 			cambiarCantLikesTexto(cantLikes, String.valueOf(foto.getCantLikes()) + " Me gusta" );
 		}	

@@ -51,7 +51,7 @@
         android:layout_alignParentLeft="true"
         android:text="@string/botonLike"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:textStyle="bold|italic" />
 
 </RelativeLayout>
