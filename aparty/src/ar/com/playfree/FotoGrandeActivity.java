@@ -92,11 +92,6 @@ public class FotoGrandeActivity extends Activity {
 					.resize(800, 800).centerCrop().into(imageView);
 		}
 
-		final TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
-		if(foto.getCantLikes() != 0){
-			cantLikes.setText(String.valueOf(foto.getCantLikes()) + " Me gusta");
-		}		
-
 		TextView subidaPor = (TextView) findViewById(R.id.subidaPor);
 		subidaPor.setText(limpiarUsuario(foto.getUsuario()));
 		
@@ -105,11 +100,7 @@ public class FotoGrandeActivity extends Activity {
 		botonLike.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				if (foto.isLike()) {
-					new SendLike().execute(foto.getId());
-				} else {
-					//new SendLike().execute(foto.getId());
-				}
+				new SendLike().execute(foto.getId());
 			}
 		});
 	}
@@ -122,15 +113,6 @@ public class FotoGrandeActivity extends Activity {
 			foto = new DataServices().sendLikeFoto(params[0],
 					getApplicationContext());
 			toggleLikeBoton(foto);
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					final TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
-					if(foto.getCantLikes() != 0){
-						cantLikes.setText(String.valueOf(foto.getCantLikes()) + " Me gusta");
-					}
-				}
-			});
 			return null;
 		}
 
@@ -142,13 +124,35 @@ public class FotoGrandeActivity extends Activity {
 
 	private void toggleLikeBoton(Foto foto) {
 		if (foto.isLike()) {
-			botonLike.setText(R.string.nomeGusta);
+			cambiarBotonLikeTexto(botonLike, R.string.nomeGusta );
 			foto.setLike(false);
 		} else {
-			botonLike.setText(R.string.meGusta);
+			cambiarBotonLikeTexto(botonLike, R.string.meGusta );
 			foto.setLike(true);
 		}
+		TextView cantLikes = (TextView) findViewById(R.id.cantLikes);
+		if(foto.getCantLikes() != 0){
+			cambiarCantLikesTexto(cantLikes, String.valueOf(foto.getCantLikes()) + " Me gusta" );
+		}	
 
+	}
+
+	private void cambiarCantLikesTexto(final TextView cantLikes, final String texto) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				cantLikes.setText(texto);
+			}
+		});		
+	}
+
+	private void cambiarBotonLikeTexto(Button boton, final int texto) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				botonLike.setText(texto);
+			}
+		});		
 	}
 
 	@Override
