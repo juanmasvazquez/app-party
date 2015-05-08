@@ -24,5 +24,7 @@
     <string name="refrescar">Refrescar</string>
     <string name="botonLike">Me gusta</string>
     <string name="conectar">Conectar</string>
+    <string name="seleccion_categoria">Seleccione una Categoría</string>
+    
 
 </resources>

@@ -41,6 +41,17 @@ public class DataServices {
 				evento.setCodigo(data.getString("codigo"));
 				evento.setId(data.getLong("id"));
 				evento.setNombre(data.getString("nombre"));
+				evento.setCategorias(new ArrayList<Categoria>());
+
+				JSONArray categorias = data.getJSONArray("categorias");
+				Categoria categoria = null;
+				for (int i = 0; i < categorias.length(); i++) {
+					categoria = new Categoria();
+					categoria.setId(categorias.getJSONObject(i).getLong("id"));
+					categoria.setNombre(categorias.getJSONObject(i).getString(
+							"nombre"));
+					evento.getCategorias().add(categoria);
+				}
 				return evento;
 			} else {
 				throw new ServiceException(errorMsj);
@@ -112,10 +123,34 @@ public class DataServices {
 				mContext);
 		try {
 			JSONObject response = getJSONResponse(service);
-		} catch (Exception e) {
-			e.printStackTrace();
+			response = response.getJSONObject("response");
+			JSONArray data = response.getJSONArray("data");
+			boolean success = response.getBoolean("success");
+			String errorMsj = response.getString("errorMessage");
+
+			if (success) {
+				List<Foto> fotos = new ArrayList<Foto>();
+				for (int i = 0; i < data.length(); i++) {
+					Foto foto = new Foto();
+					foto.setCantLikes(data.getJSONObject(i).getInt("cantLikes"));
+					foto.setId(data.getJSONObject(i).getLong("id"));
+					foto.setIdCategoria(data.getJSONObject(i).getLong(
+							"idCategoria"));
+					foto.setLike(data.getJSONObject(i).getBoolean("like"));
+					foto.setMac(data.getJSONObject(i).getString("mac"));
+					foto.setUrl(data.getJSONObject(i).getString("url"));
+					foto.setUrlThumb(data.getJSONObject(i)
+							.getString("urlThumb"));
+					foto.setUsuario(data.getJSONObject(i).getString("usuario"));
+					fotos.add(foto);
+				}
+				return fotos;
+			} else {
+				throw new ServiceException(errorMsj);
+			}
+		} catch (JSONException e) {
+			throw new ServiceException("Error interno");
 		}
-		return null;
 	}
 
 	public Foto pushFoto(Long idCategoria, InputStream foto, Context mContext)
@@ -163,7 +198,7 @@ public class DataServices {
 	}
 
 	private static JSONObject getJSONResponse(String service, InputStream in)
-			 throws ServiceException {
+			throws ServiceException {
 		JSONObject response = null;
 		try {
 			DefaultHttpClient httpclient = new DefaultHttpClient(

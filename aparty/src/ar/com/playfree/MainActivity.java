@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -22,6 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import ar.com.playfree.entities.Categoria;
 import ar.com.playfree.entities.Evento;
 import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
@@ -33,6 +37,7 @@ public class MainActivity extends Activity {
 	private static final int TAKE_PHOTO_CODE = 0;
 	private File fileSelect;
 	private Evento evento;
+	private CharSequence[] categoriasOpciones;
 
 	public static MainActivity instance;
 
@@ -159,10 +164,32 @@ public class MainActivity extends Activity {
 
 		if (resultCode == RESULT_OK) {
 			if (requestCode == TAKE_PHOTO_CODE) {
-				try {
-					sendPhoto(fileSelect);
-				} catch (Exception e) {
-				}
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						MainActivity.this,
+						AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+				builder.setCancelable(Boolean.FALSE);
+				builder.setTitle(R.string.seleccion_categoria).setItems(
+						categoriasOpciones,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									final int which) {
+
+								runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										Categoria categoria = evento
+												.getCategorias().get(which);
+										try {
+											sendPhoto(categoria.getId(),
+													fileSelect);
+										} catch (Exception e) {
+										}
+									}
+								});
+							}
+						});
+				AlertDialog dialog = builder.create();
+				dialog.show();
 			}
 		}
 	}
@@ -170,14 +197,19 @@ public class MainActivity extends Activity {
 	// Logica para Captura de Foto
 	// -------------------------------------------------------------------------
 
-	private void sendPhoto(File file) throws Exception {
-		new CameraTask().execute(file);
+	private void sendPhoto(Long idCategoria, File file) throws Exception {
+		new CameraTask(idCategoria).execute(file);
 	}
 
 	private class CameraTask extends AsyncTask<File, Void, Void> {
 
 		private TransparentProgressDialog pdia;
 		private ServiceException sexc;
+		private Long idCategoria;
+
+		public CameraTask(Long idCategoria) {
+			this.idCategoria = idCategoria;
+		}
 
 		@Override
 		protected void onPreExecute() {
@@ -189,8 +221,8 @@ public class MainActivity extends Activity {
 
 		protected Void doInBackground(File... files) {
 			try {
-				new DataServices().pushFoto(1L, new FileInputStream(files[0]),
-						getApplicationContext());
+				new DataServices().pushFoto(idCategoria, new FileInputStream(
+						files[0]), getApplicationContext());
 			} catch (ServiceException sexc) {
 				this.sexc = sexc;
 			} catch (FileNotFoundException e) {
@@ -295,6 +327,13 @@ public class MainActivity extends Activity {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("EVENTO_CODIGO", evento.getCodigo());
 		editor.commit();
+
+		List<Categoria> categorias = evento.getCategorias();
+		this.categoriasOpciones = new CharSequence[categorias.size()];
+		for (int i = 0; i < categorias.size(); i++) {
+			Categoria categoria = categorias.get(i);
+			this.categoriasOpciones[i] = categoria.getNombre();
+		}
 
 		runOnUiThread(new Runnable() {
 			@Override
