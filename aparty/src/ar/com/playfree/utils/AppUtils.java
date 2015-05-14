@@ -68,6 +68,6 @@ public class AppUtils {
 		Long idEvento = 1L;
 		return SERVER_URL + PHOTOS_CATEGORIA_SERVICE + "?evId=" + idEvento
 				+ "&mac=" + getMac(mContext) + "&usr=" + getUsername(mContext)
-				+ "&catId=" + idCategoria;
+				+ ((null!=idCategoria) ? "&catId=" + idCategoria : "");
 	}
 }

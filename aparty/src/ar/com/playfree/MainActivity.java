@@ -387,5 +387,9 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
+	
+	public List<Categoria> getCategorias(){
+		return evento.getCategorias();
+	}
 
 }

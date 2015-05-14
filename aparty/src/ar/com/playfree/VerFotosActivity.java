@@ -51,7 +51,7 @@ public class VerFotosActivity extends Activity {
 
 	static List<Foto> fotos = new ArrayList<Foto>();
 	Spinner categorias = null;
-	DataServicesDummy dummy = new DataServicesDummy();
+	DataServices services = new DataServices();
 	ImageAdapter2 imageAdapter;
 	GridView gridview;
 	protected ImageLoader imageLoader;
@@ -80,7 +80,8 @@ public class VerFotosActivity extends Activity {
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		try {
-			getPhoto();
+			getFotosByCategoria(null);
+			cargarCategorias();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,7 +91,7 @@ public class VerFotosActivity extends Activity {
 
 	private void cargarCategorias() {
 		categorias = (Spinner) findViewById(R.id.categorias);
-		List<Categoria> list = dummy.getCategorias(null);
+		List<Categoria> list = MainActivity.instance.getCategorias();
 		SpinAdapter adapter;
 		adapter = new SpinAdapter(VerFotosActivity.this,
 				android.R.layout.simple_spinner_item, list);
@@ -104,72 +105,72 @@ public class VerFotosActivity extends Activity {
 				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
 
-	private class ImageAdapter extends BaseAdapter {
-		private Context mContext;
-
-		public ImageAdapter(Context context, List<Foto> album) {
-			mContext = context;
-			if (null != album) {
-				fotos = album;
-			}
-		}
-
-		@Override
-		public int getCount() {
-			return fotos.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-
-			ImageView imageView;
-			if (convertView == null) {
-				imageView = new ImageView(mContext);
-			} else {
-				imageView = (ImageView) convertView;
-			}
-
-			Picasso picasso = Picasso.with(mContext);
-			Foto foto = (Foto) fotos.get(position);
-			picasso.load(foto.getUrlThumb()).placeholder(R.raw.place_holder)
-					.error(R.raw.big_problem).resize(150, 150).centerCrop()
-					.into(imageView);
-
-			if (foto.isLike()) {
-				Bitmap water = BitmapFactory.decodeResource(
-						mContext.getResources(), R.drawable.facebooklike23);
-				imageView.setDrawingCacheEnabled(true);
-				imageView
-						.measure(MeasureSpec.makeMeasureSpec(0,
-								MeasureSpec.UNSPECIFIED), MeasureSpec
-								.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-				imageView.layout(0, 0, imageView.getMeasuredWidth(),
-						imageView.getMeasuredHeight());
-				imageView.buildDrawingCache(true);
-				Bitmap principal = Bitmap.createBitmap(imageView
-						.getDrawingCache());
-				Bitmap bmOverlay = Bitmap.createBitmap(150, 150,
-						principal.getConfig());
-				imageView.setDrawingCacheEnabled(false);
-				Canvas canvas = new Canvas(bmOverlay);
-				canvas.drawBitmap(principal, 0, 0, null);
-				canvas.drawBitmap(water, 0, 110, null);
-				imageView.setImageBitmap(bmOverlay);
-			}
-
-			return imageView;
-		}
-	}
+//	private class ImageAdapter extends BaseAdapter {
+//		private Context mContext;
+//
+//		public ImageAdapter(Context context, List<Foto> album) {
+//			mContext = context;
+//			if (null != album) {
+//				fotos = album;
+//			}
+//		}
+//
+//		@Override
+//		public int getCount() {
+//			return fotos.size();
+//		}
+//
+//		@Override
+//		public Object getItem(int position) {
+//			return null;
+//		}
+//
+//		@Override
+//		public long getItemId(int position) {
+//			return 0;
+//		}
+//
+//		@Override
+//		public View getView(int position, View convertView, ViewGroup parent) {
+//
+//			ImageView imageView;
+//			if (convertView == null) {
+//				imageView = new ImageView(mContext);
+//			} else {
+//				imageView = (ImageView) convertView;
+//			}
+//
+//			Picasso picasso = Picasso.with(mContext);
+//			Foto foto = (Foto) fotos.get(position);
+//			picasso.load(foto.getUrlThumb()).placeholder(R.raw.place_holder)
+//					.error(R.raw.big_problem).resize(150, 150).centerCrop()
+//					.into(imageView);
+//
+//			if (foto.isLike()) {
+//				Bitmap water = BitmapFactory.decodeResource(
+//						mContext.getResources(), R.drawable.facebooklike23);
+//				imageView.setDrawingCacheEnabled(true);
+//				imageView
+//						.measure(MeasureSpec.makeMeasureSpec(0,
+//								MeasureSpec.UNSPECIFIED), MeasureSpec
+//								.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+//				imageView.layout(0, 0, imageView.getMeasuredWidth(),
+//						imageView.getMeasuredHeight());
+//				imageView.buildDrawingCache(true);
+//				Bitmap principal = Bitmap.createBitmap(imageView
+//						.getDrawingCache());
+//				Bitmap bmOverlay = Bitmap.createBitmap(150, 150,
+//						principal.getConfig());
+//				imageView.setDrawingCacheEnabled(false);
+//				Canvas canvas = new Canvas(bmOverlay);
+//				canvas.drawBitmap(principal, 0, 0, null);
+//				canvas.drawBitmap(water, 0, 110, null);
+//				imageView.setImageBitmap(bmOverlay);
+//			}
+//
+//			return imageView;
+//		}
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -187,7 +188,7 @@ public class VerFotosActivity extends Activity {
 			Toast.makeText(getBaseContext(), "Refrescando fotos...",
 					Toast.LENGTH_SHORT).show();
 			try {
-				getPhoto();
+				getFotosByCategoria(null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -208,15 +209,14 @@ public class VerFotosActivity extends Activity {
 		public void onItemSelected(AdapterView<?> parent, View view, int pos,
 				long id) {
 
-			// TODO eliminar dummy
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
-			DataServicesDummy dummy = new DataServicesDummy();
-			List<Foto> album = dummy.getFotosCategoria(categoria.getId(), null);
-			// android.os.SystemClock.sleep(1000);
-			if (album.size() == 0) {
-
+			try {
+				getFotosByCategoria(categoria.getId());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			imageAdapter = new ImageAdapter2(getApplicationContext(), album);
+			imageAdapter = new ImageAdapter2(getApplicationContext(), fotos);
 			gridview.setAdapter(imageAdapter);
 		}
 
@@ -228,19 +228,18 @@ public class VerFotosActivity extends Activity {
 
 	}
 
-	private void getPhoto() throws Exception {
-		new PhotoTask().execute();
+	private void getFotosByCategoria(Long idCategoria) throws Exception {
+		new PhotoTask().execute(idCategoria);
 	}
 
-	private class PhotoTask extends AsyncTask<Void, Void, Void> {
+	private class PhotoTask extends AsyncTask<Long, Void, Void> {
 
-		private List<Foto> photos;
-
-		protected Void doInBackground(Void... files) {
+		protected Void doInBackground(Long... categorias) {
 			setProgress(0);
+			Long idCategoria = categorias[0];
 
 			try {
-				photos = new DataServices().getFotos(getApplicationContext());
+				fotos = new DataServices().getFotosCategoria(idCategoria, getApplicationContext());
 			} catch (final ServiceException sexc) {
 				runOnUiThread(new Runnable() {
 					@Override
@@ -263,7 +262,7 @@ public class VerFotosActivity extends Activity {
 		protected void onPostExecute(Void result) {
 
 			gridview = (GridView) findViewById(R.id.gridview);
-			imageAdapter = new ImageAdapter2(VerFotosActivity.this, photos);
+			imageAdapter = new ImageAdapter2(VerFotosActivity.this, fotos);
 			gridview.setAdapter(imageAdapter);
 			gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -272,7 +271,7 @@ public class VerFotosActivity extends Activity {
 					Intent i = new Intent(VerFotosActivity.this,
 							FotoGrandeActivity.class);
 					i.putExtra("position", position);
-					i.putExtra("foto", (Foto) photos.get(position));
+					i.putExtra("foto", (Foto) fotos.get(position));
 					startActivity(i);
 					overridePendingTransition(R.anim.slide_in_right,
 							R.anim.slide_out_left);
