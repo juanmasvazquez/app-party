@@ -49,15 +49,20 @@ import com.squareup.picasso.Picasso;
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class VerFotosActivity extends Activity {
 
+	private static final String CATEGORIA = "ID_CATEGORIA";
+
 	static List<Foto> fotos = new ArrayList<Foto>();
-	Spinner categorias = null;
-	DataServices services = new DataServices();
-	ImageAdapter2 imageAdapter;
-	GridView gridview;
+	private Spinner categorias = null;
+	private DataServices services = new DataServices();
+	private ImageAdapter2 imageAdapter;
+	private GridView gridview;
+	private Long selectedCategoria;
 	protected ImageLoader imageLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
 		// Setear la fuente a utilizar en el mainActivity
 		String fontPath = "fonts/Roboto-Thin.ttf";
 
@@ -72,7 +77,6 @@ public class VerFotosActivity extends Activity {
 			actionBarTitleView.setTextSize(20);
 		}
 
-		super.onCreate(savedInstanceState);
 		imageLoader = ImageLoader.getInstance();
 		imageLoader.init(ImageLoaderConfiguration.createDefault(this));
 		setContentView(R.layout.activity_ver_fotos);
@@ -80,10 +84,8 @@ public class VerFotosActivity extends Activity {
 		getActionBar().setHomeButtonEnabled(true);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		try {
-			getFotosByCategoria(null);
 			cargarCategorias();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -104,73 +106,6 @@ public class VerFotosActivity extends Activity {
 		categorias
 				.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 	}
-
-//	private class ImageAdapter extends BaseAdapter {
-//		private Context mContext;
-//
-//		public ImageAdapter(Context context, List<Foto> album) {
-//			mContext = context;
-//			if (null != album) {
-//				fotos = album;
-//			}
-//		}
-//
-//		@Override
-//		public int getCount() {
-//			return fotos.size();
-//		}
-//
-//		@Override
-//		public Object getItem(int position) {
-//			return null;
-//		}
-//
-//		@Override
-//		public long getItemId(int position) {
-//			return 0;
-//		}
-//
-//		@Override
-//		public View getView(int position, View convertView, ViewGroup parent) {
-//
-//			ImageView imageView;
-//			if (convertView == null) {
-//				imageView = new ImageView(mContext);
-//			} else {
-//				imageView = (ImageView) convertView;
-//			}
-//
-//			Picasso picasso = Picasso.with(mContext);
-//			Foto foto = (Foto) fotos.get(position);
-//			picasso.load(foto.getUrlThumb()).placeholder(R.raw.place_holder)
-//					.error(R.raw.big_problem).resize(150, 150).centerCrop()
-//					.into(imageView);
-//
-//			if (foto.isLike()) {
-//				Bitmap water = BitmapFactory.decodeResource(
-//						mContext.getResources(), R.drawable.facebooklike23);
-//				imageView.setDrawingCacheEnabled(true);
-//				imageView
-//						.measure(MeasureSpec.makeMeasureSpec(0,
-//								MeasureSpec.UNSPECIFIED), MeasureSpec
-//								.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-//				imageView.layout(0, 0, imageView.getMeasuredWidth(),
-//						imageView.getMeasuredHeight());
-//				imageView.buildDrawingCache(true);
-//				Bitmap principal = Bitmap.createBitmap(imageView
-//						.getDrawingCache());
-//				Bitmap bmOverlay = Bitmap.createBitmap(150, 150,
-//						principal.getConfig());
-//				imageView.setDrawingCacheEnabled(false);
-//				Canvas canvas = new Canvas(bmOverlay);
-//				canvas.drawBitmap(principal, 0, 0, null);
-//				canvas.drawBitmap(water, 0, 110, null);
-//				imageView.setImageBitmap(bmOverlay);
-//			}
-//
-//			return imageView;
-//		}
-//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -211,13 +146,12 @@ public class VerFotosActivity extends Activity {
 
 			Categoria categoria = (Categoria) parent.getItemAtPosition(pos);
 			try {
+				selectedCategoria = categoria.getId();
 				getFotosByCategoria(categoria.getId());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			imageAdapter = new ImageAdapter2(getApplicationContext(), fotos);
-			gridview.setAdapter(imageAdapter);
 		}
 
 		@Override
@@ -239,7 +173,8 @@ public class VerFotosActivity extends Activity {
 			Long idCategoria = categorias[0];
 
 			try {
-				fotos = new DataServices().getFotosCategoria(idCategoria, getApplicationContext());
+				fotos = new DataServices().getFotosCategoria(idCategoria,
+						getApplicationContext());
 			} catch (final ServiceException sexc) {
 				runOnUiThread(new Runnable() {
 					@Override
@@ -260,7 +195,6 @@ public class VerFotosActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void result) {
-
 			gridview = (GridView) findViewById(R.id.gridview);
 			imageAdapter = new ImageAdapter2(VerFotosActivity.this, fotos);
 			gridview.setAdapter(imageAdapter);
@@ -292,14 +226,14 @@ public class VerFotosActivity extends Activity {
 		inflater.inflate(R.menu.items, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	private static class ImageAdapter2 extends BaseAdapter {
 
 		private LayoutInflater inflater;
 
 		private DisplayImageOptions options;
-		
-		private Context mContext ;
+
+		private Context mContext;
 
 		ImageAdapter2(Context context, List<Foto> album) {
 			fotos = album;
@@ -308,12 +242,9 @@ public class VerFotosActivity extends Activity {
 			options = new DisplayImageOptions.Builder()
 					.showImageOnLoading(R.raw.place_holder)
 					.showImageForEmptyUri(R.raw.place_holder)
-					.showImageOnFail(R.raw.big_problem)
-					.cacheInMemory(true)
-					.cacheOnDisk(true)
-					.considerExifParams(true)
-					.bitmapConfig(Bitmap.Config.RGB_565)
-					.build();
+					.showImageOnFail(R.raw.big_problem).cacheInMemory(true)
+					.cacheOnDisk(true).considerExifParams(true)
+					.bitmapConfig(Bitmap.Config.RGB_565).build();
 		}
 
 		@Override
@@ -336,24 +267,27 @@ public class VerFotosActivity extends Activity {
 			final ViewHolder holder;
 			View view = convertView;
 			if (view == null) {
-				view = inflater.inflate(R.layout.item_grid_image, parent, false);
+				view = inflater
+						.inflate(R.layout.item_grid_image, parent, false);
 				holder = new ViewHolder();
 				assert view != null;
 				holder.imageView = (ImageView) view.findViewById(R.id.image);
 				holder.imageView2 = (ImageView) view.findViewById(R.id.image2);
-				holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
+				holder.progressBar = (ProgressBar) view
+						.findViewById(R.id.progress);
 				view.setTag(holder);
 			} else {
 				holder = (ViewHolder) view.getTag();
 			}
-			
+
 			Foto foto = (Foto) fotos.get(position);
-			if (foto.isLike()){
+			if (foto.isLike()) {
 				holder.imageView2.setVisibility(View.VISIBLE);
 				holder.imageView2.setImageResource(R.drawable.facebooklike23);
-			}			
-			ImageLoader.getInstance()
-					.displayImage(foto.getUrlThumb(), holder.imageView, options, new SimpleImageLoadingListener() {
+			}
+			ImageLoader.getInstance().displayImage(foto.getUrlThumb(),
+					holder.imageView, options,
+					new SimpleImageLoadingListener() {
 						@Override
 						public void onLoadingStarted(String imageUri, View view) {
 							holder.progressBar.setProgress(0);
@@ -361,18 +295,22 @@ public class VerFotosActivity extends Activity {
 						}
 
 						@Override
-						public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+						public void onLoadingFailed(String imageUri, View view,
+								FailReason failReason) {
 							holder.progressBar.setVisibility(View.GONE);
 						}
 
 						@Override
-						public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+						public void onLoadingComplete(String imageUri,
+								View view, Bitmap loadedImage) {
 							holder.progressBar.setVisibility(View.GONE);
 						}
 					}, new ImageLoadingProgressListener() {
 						@Override
-						public void onProgressUpdate(String imageUri, View view, int current, int total) {
-							holder.progressBar.setProgress(Math.round(100.0f * current / total));
+						public void onProgressUpdate(String imageUri,
+								View view, int current, int total) {
+							holder.progressBar.setProgress(Math.round(100.0f
+									* current / total));
 						}
 					});
 
@@ -384,6 +322,17 @@ public class VerFotosActivity extends Activity {
 		ImageView imageView;
 		ImageView imageView2;
 		ProgressBar progressBar;
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			getFotosByCategoria(selectedCategoria);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

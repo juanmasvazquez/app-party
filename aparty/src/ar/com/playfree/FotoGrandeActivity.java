@@ -86,7 +86,7 @@ public class FotoGrandeActivity extends Activity {
 		final int position = getIntent().getIntExtra("position", -1);
 		foto = (Foto) getIntent().getSerializableExtra("foto");
 		if (position != -1) {
-			Picasso.with(FotoGrandeActivity.this).load(foto.getUrl())
+			Picasso.with(FotoGrandeActivity.this).load("http://172.16.19.191:8080/repository/eventos/1/_1431632810672.jpg")
 					.placeholder(R.raw.place_holder).resize(800, 800)
 					.centerInside().error(R.raw.big_problem).into(imageView);
 		} else {
@@ -175,7 +175,7 @@ public class FotoGrandeActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case android.R.id.home:
-			startActivityAfterCleanup(VerFotosActivity.class);
+			onBackPressed();
 			return true;
 		case R.id.bajarFoto:
 			Toast.makeText(getApplicationContext(), "Descargando Imagen...",
@@ -413,6 +413,6 @@ public class FotoGrandeActivity extends Activity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-		startActivityAfterCleanup(VerFotosActivity.class);
+//		startActivityAfterCleanup(VerFotosActivity.class);
 	}
 }

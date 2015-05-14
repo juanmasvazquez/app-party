@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    android:orientation="vertical" >
+    android:orientation="vertical" android:paddingTop="50dp">
 
     <Button
         android:id="@+id/btnUnirEvento"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:background="@drawable/pressed_calendar"
@@ -37,8 +37,8 @@
 
     <Button
         android:id="@+id/btnCapture"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignLeft="@+id/btnUnirEvento"
         android:layout_below="@+id/tituloEvento"
         android:background="@drawable/pressed_camera"
@@ -58,8 +58,8 @@
 
     <Button
         android:id="@+id/btnVerAlbum"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignLeft="@+id/btnUnirEvento"
         android:layout_below="@+id/textViewCapturar"
         android:layout_marginTop="46dp"
@@ -80,11 +80,11 @@
 
     <Button
         android:id="@+id/btnConectar"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/conectar"
+        android:background="@drawable/ic_refresh"
         android:visibility="invisible" />
 
     <TextView

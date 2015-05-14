@@ -387,9 +387,12 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
-	
-	public List<Categoria> getCategorias(){
-		return evento.getCategorias();
+
+	public List<Categoria> getCategorias() {
+		if (null != evento) {
+			return evento.getCategorias();
+		}
+		return null;
 	}
 
 }
