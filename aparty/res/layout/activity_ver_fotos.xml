@@ -2,18 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" android:background="@drawable/bg"  android:paddingTop="50dp" >
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg"
+    android:paddingTop="50dp" >
 
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
-        android:numColumns="2"
         android:gravity="center"
-        android:horizontalSpacing="10dp"
+        android:horizontalSpacing="4dip"
+        android:numColumns="3"
+        android:padding="4dip"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp" />
+        android:verticalSpacing="4dip" />
 
     <TextView
         android:id="@+id/textView1"
@@ -25,8 +28,8 @@
     <Spinner
         android:id="@+id/categorias"
         android:layout_width="200dp"
-        android:labelFor="@string/categorias"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/textView1" />
+        android:layout_toRightOf="@+id/textView1"
+        android:labelFor="@string/categorias" />
 
 </RelativeLayout>

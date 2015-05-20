@@ -214,8 +214,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			pdia = new TransparentProgressDialog(MainActivity.this,
-					R.drawable.loading);
+			pdia = new TransparentProgressDialog(MainActivity.this);
 			pdia.show();
 		}
 
@@ -261,8 +260,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			pdia = new TransparentProgressDialog(MainActivity.this,
-					R.drawable.loading);
+			pdia = new TransparentProgressDialog(MainActivity.this);
 			pdia.show();
 		}
 

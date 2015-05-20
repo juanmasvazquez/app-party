@@ -17,7 +17,7 @@ public class TransparentProgressDialog extends Dialog {
 
 	private ProgressBar iv;
 	
-	public TransparentProgressDialog(Context context, int resourceIdOfImage) {
+	public TransparentProgressDialog(Context context) {
 		super(context, R.style.TransparentProgressDialog);
         	WindowManager.LayoutParams wlmp = getWindow().getAttributes();
         	wlmp.gravity = Gravity.CENTER_HORIZONTAL;
