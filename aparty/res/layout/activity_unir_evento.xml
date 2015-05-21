@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-	android:background="#95a5a6"
     tools:context="ar.com.playfree.UnirEventoActivity"  android:paddingTop="50dp">
 
     <SurfaceView android:id="@+id/preview_view"

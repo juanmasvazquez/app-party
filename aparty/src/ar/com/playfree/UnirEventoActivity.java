@@ -8,10 +8,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -114,7 +116,7 @@ public class UnirEventoActivity extends Activity {
 						alertDialog.setTitle("Evento encontrado");
 						alertDialog.setMessage("¿Desea unirse al evento: "
 								+ result.getNombre() + " ?");
-						alertDialog.setIcon(R.drawable.ic_unirse);
+						alertDialog.setIcon(R.drawable.ic_unirse_dialog);
 
 						alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
 								"Aceptar",
@@ -134,19 +136,24 @@ public class UnirEventoActivity extends Activity {
 											int which) {
 										dialog.dismiss();
 										finish();
-										Intent unirEventoIntent = new Intent(
-												UnirEventoActivity.this,
-												VerFotosActivity.class);
-										startActivity(unirEventoIntent);
 
 									}
 								});
+
+						alertDialog.setOnCancelListener(new OnCancelListener() {
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								dialog.dismiss();
+								finish();
+							}
+						});
+
 						alertDialog.show();
 
-						
 					}
 				});
 			}
 		}
 	}
+
 }
