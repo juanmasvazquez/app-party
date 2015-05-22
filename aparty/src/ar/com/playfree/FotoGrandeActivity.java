@@ -41,6 +41,8 @@ import ar.com.playfree.exceptions.ServiceException;
 import ar.com.playfree.services.DataServices;
 import ar.com.playfree.views.TouchImageView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -86,9 +88,18 @@ public class FotoGrandeActivity extends Activity {
 		final int position = getIntent().getIntExtra("position", -1);
 		foto = (Foto) getIntent().getSerializableExtra("foto");
 		if (position != -1) {
-			Picasso.with(FotoGrandeActivity.this).load(foto.getUrl())
-					.placeholder(R.drawable.ic_loading).error(R.drawable.ic_error).noFade()
-					.into(imageView);
+			ImageLoader imageLoader = ImageLoader.getInstance();
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+							.cacheInMemory(true)
+							.resetViewBeforeLoading(true)
+							.showImageOnLoading(R.drawable.ic_loading)
+							.showImageForEmptyUri(R.drawable.ic_error)
+							.showImageOnFail(R.drawable.ic_error)
+							.cacheInMemory(true)
+							.build();
+
+			//download and display image from url
+			imageLoader.displayImage(foto.getUrl(), imageView, options);
 		} else {
 			Picasso.with(FotoGrandeActivity.this).load(R.raw.big_problem)
 					.resize(800, 800).centerCrop().into(imageView);
@@ -148,7 +159,6 @@ public class FotoGrandeActivity extends Activity {
 			cambiarCantLikesTexto(cantLikes,
 					String.valueOf(foto.getCantLikes()) + " Me gusta");
 		}
-
 	}
 
 	private void cambiarCantLikesTexto(final TextView cantLikes,
